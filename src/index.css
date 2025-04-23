@@ -1,0 +1,258 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 255 249 230; /* #FFF9E6 */
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 255 249 230; /* #FFF9E6 */
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 262 83% 63%; /* Purple */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 291 84% 61%; /* Magenta */
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 199 95% 48%; /* Blue */
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 255 249 230; /* #FFF9E6 */
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 255 249 230; /* #FFF9E6 */
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 255 249 230; /* #FFF9E6 */
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply text-foreground;
+    background-color: #FFF9E6;
+    min-height: 100vh;
+  }
+
+  /* Apply background to all components */
+  .card, .popover, .dialog, .modal, .dropdown-menu {
+    background-color: #FFF9E6 !important;
+  }
+}
+
+/* Add new gradient background */
+.gradient-white-to-cream {
+  background: linear-gradient(to bottom, #FFFFFF 0%, #FFF9E6 100%);
+}
+
+/* Add this to your existing styles */
+.bg-warm-gradient {
+  background: linear-gradient(to bottom, #FFF9E6 0%, #ffffff 100%);
+}
+
+/* ANIMATIONS */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-permanent {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.6s ease-out forwards;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+/* Scroll animations */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.animate-on-scroll.animate-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-primary;
+}
+
+.service-card {
+  @apply relative overflow-hidden rounded-xl border shadow-md transition-all duration-500 hover:shadow-xl hover:-translate-y-1;
+  background-size: cover;
+  background-position: center;
+  background-color: #FFF9E6;
+}
+
+.service-card::before {
+  content: '';
+  @apply absolute inset-0 bg-xpectrum-dark bg-opacity-60 transition-opacity duration-300 z-0;
+}
+
+.service-card:hover::before {
+  @apply bg-opacity-40;
+}
+
+/* Add new animated gradient border glow */
+.service-card::after {
+  content: '';
+  position: absolute;
+  inset: -3px; /* Control the border thickness */
+  background: conic-gradient(
+    from 0deg,
+    #84fab0, #8fd3f4, #a18cd1, #fbc2eb, #84fab0
+  );
+  filter: blur(8px); /* Adjust blur amount */
+  z-index: -1; /* Place behind the card */
+  animation: gradient-spin 4s linear infinite;
+  border-radius: calc(0.75rem + 3px); /* xl radius (0.75rem) + inset */
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.service-card:hover::after {
+  opacity: 0.6; /* Show glow on hover */
+}
+
+@keyframes gradient-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.case-study-card {
+  @apply relative overflow-hidden rounded-xl border p-6 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+  background-color: #FFF9E6;
+}
+
+.glow {
+  box-shadow: 0 0 15px 2px rgba(255, 165, 0, 0.6), 0 0 10px 5px rgba(255, 255, 255, 0.5);
+  animation: glowing 1.5s infinite alternate;
+}
+
+@keyframes glowing {
+  0% {
+    box-shadow: 0 0 10px 2px rgba(255, 165, 0, 0.6), 0 0 5px 4px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 20px 5px rgba(255, 165, 0, 0.8), 0 0 15px 8px rgba(255, 255, 255, 0.7);
+  }
+}
+
+.hero-gradient {
+  background: #FFF9E6;
+}
+
+.content-container {
+  @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24;
+}
+
+.section-title {
+  @apply text-3xl md:text-4xl font-bold mb-4 md:mb-6;
+}
+
+.section-subtitle {
+  @apply text-lg md:text-xl text-gray-600 mb-8 md:mb-12 max-w-3xl;
+}
+
+.nav-link {
+  @apply relative inline-block text-gray-700 hover:text-xpectrum-purple transition-colors duration-200 after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-xpectrum-purple after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
+}
