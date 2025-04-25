@@ -375,7 +375,7 @@ const Insurance = () => {
         </section>
       </main>
       {/* Chat Component Integrated */}
-      <ChatComponent assistantName="Insurance Assistant" />
+      <ChatComponent assistantName="Insurance Assistant" domain="Insurance" />
     </>
   );
 };

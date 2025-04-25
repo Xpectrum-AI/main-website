@@ -9,37 +9,90 @@ type MessageType = {
     url: string;
     caption?: string;
   };
+  link?: string;
 };
 
 interface AttachedFile {
   file: File;
   id: string;
+  upload_file_id?: string;
+  url?: string;
 }
 
-// Define props interface
+// Define props interface with domain types
 interface ChatComponentProps {
-  assistantName?: string; // Make it optional with a default
+  assistantName?: string;
+  domain: keyof typeof API_KEYS | keyof typeof DOMAIN_CONFIG;
 }
 
-// API Configuration
-const API_BASE_URL = "https://api.next-agi.com/v1"; 
-
-const apiKeys = {
-  HRMS: 'app-cEBy9PIjQ7AqhnuJiDDUOzZA',
-  Hospitality: 'app-vGvMMAK3o0rxeAHOWaj96RCG',
-  default: 'app-ruGmYX438Wm4TJR03TueyGmx' // Fallback/Insurance key
+// Use environment variables
+const API_KEYS = {
+  HRMS: "app-7cE1DmqobC2aVLBVQz1DAbaM",
+  Insurance: "app-MU2OyM1rgRrnRebt2BPBpK5r",
+  Hospitality: "app-vGvMMAK3o0rxeAHOWaj96RCG"
 };
 
-// Helper function to get the correct API key
-const getApiKey = (assistantName: string): string => {
-  if (assistantName.includes('HRMS')) {
-    return apiKeys.HRMS;
+// Domain-specific configuration
+const DOMAIN_CONFIG = {
+  HRMS: {
+    welcomeMessage: "Welcome to the HR Management System! How can I assist you with HR matters today?",
+    placeholderText: "Ask about leave balance, policies, payroll...",
+    suggestedQueries: [
+      "How do I apply for leave?",
+      "What's my leave balance?",
+      "How can I update my personal information?",
+      "Where can I find the employee handbook?",
+      "How do I submit a harassment complaint?"
+    ]
+  },
+  Insurance: {
+    welcomeMessage: "Welcome to Insurance Management! I can help you with policies, claims, and coverage inquiries.",
+    placeholderText: "Ask about policies, claims, coverage...",
+    suggestedQueries: [
+      "How do I file an insurance claim?",
+      "What's my policy coverage?",
+      "How do I add dependents to my policy?",
+      "Can you explain my deductibles?",
+      "How do I check my claim status?"
+    ]
+  },
+  Hospitality: {
+    welcomeMessage: "Welcome to Hospitality Services! How can I assist you with your hospitality needs today?",
+    placeholderText: "Ask about bookings, amenities, services...",
+    suggestedQueries: [
+      "How do I make a reservation?",
+      "What amenities are available?",
+      "Can I request early check-in?",
+      "What dining options do you offer?",
+      "How do I arrange airport transfer?"
+    ]
   }
-  if (assistantName.includes('Hospitality')) {
-    return apiKeys.Hospitality;
+};
+
+const BASE_URL = "https://api.next-agi.com/v1";
+
+// Function to get API key based on domain
+const getApiKey = (domain: keyof typeof API_KEYS = 'HRMS') => {
+  return API_KEYS[domain];
+};
+
+// Get domain config based on domain name
+const getDomainConfig = (domain: keyof typeof DOMAIN_CONFIG = 'HRMS') => {
+  return DOMAIN_CONFIG[domain];
+};
+
+// Get domain-specific assistant name
+const getAssistantName = (domain: keyof typeof DOMAIN_CONFIG) => {
+  switch(domain) {
+    case 'Insurance':
+      return 'Insurance Assistant';
+    case 'Hospitality':
+      return 'Hospitality Assistant';
+    case 'HRMS':
+      return 'HR Assistant';
+    default:
+      return 'Xpectrum Assistant';
   }
-  // Add more checks here for other assistant names if needed
-  return apiKeys.default; 
 };
 
 // Speech recognition setup
@@ -60,13 +113,19 @@ interface SpeechRecognitionConstructor {
 
 const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
-const ChatComponent: React.FC<ChatComponentProps> = ({ assistantName = "Xpectrum Assistant" }) => {
+const ChatComponent: React.FC<ChatComponentProps> = ({ 
+  domain,
+  assistantName = getAssistantName(domain as keyof typeof DOMAIN_CONFIG)
+}) => {
+  // Get domain config right away
+  const domainConfig = getDomainConfig(domain as keyof typeof DOMAIN_CONFIG);
+  
   const [query, setQuery] = useState<string>("");
   const [conversationId, setConversationId] = useState<string>("");
   const [messages, setMessages] = useState<MessageType[]>([
     {
       type: "bot",
-      content: `Welcome to ${assistantName}! How can I help you today?`
+      content: domainConfig.welcomeMessage
     }
   ]);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
@@ -76,6 +135,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ assistantName = "Xpectrum
   const [isClosing, setIsClosing] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -87,6 +147,18 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ assistantName = "Xpectrum
   const linkInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+
+  // Update messages when domain changes
+  useEffect(() => {
+    const config = getDomainConfig(domain as keyof typeof DOMAIN_CONFIG);
+    setMessages([
+      {
+        type: "bot",
+        content: config.welcomeMessage
+      }
+    ]);
+    setShowSuggestions(true);
+  }, [domain]);
 
   // Auto-adjust textarea height
   useEffect(() => {
@@ -136,21 +208,94 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ assistantName = "Xpectrum
   }, [isOpen, showAttachmentOptions]);
 
   // Handle file selection
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      // Check file size (max 10MB)
-      if (file.size > 10 * 1024 * 1024) {
+      console.log("File selected:", {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        lastModified: new Date(file.lastModified).toISOString()
+      });
+      
+      // Check file size (max 5MB - adjust if needed)
+      if (file.size > 5 * 1024 * 1024) {
+        console.log("File size validation failed:", file.size, "bytes");
         setMessages(prev => [...prev, { 
           type: "error", 
-          content: "File is too large. Maximum size is 10MB." 
+          content: "File is too large. Maximum size is 5MB." 
         }]);
         return;
       }
-      
-      setAttachedFiles(prev => [...prev, { file, id: Math.random().toString(36).substr(2, 9) }]);
-      setShowAttachmentOptions(false);
-      console.log("File attached:", file.name);
+
+      // Check file type - only allow images
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        console.log("File type validation failed:", file.type);
+        setMessages(prev => [...prev, { 
+          type: "error", 
+          content: "Invalid file type. Please upload only JPG, PNG, GIF, or WebP images." 
+        }]);
+        return;
+      }
+
+      try {
+        console.log("Starting file upload process...");
+        
+        // Create FormData with the exact field name used in the curl command
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('user', 'abc-123');
+        
+        // Log the FormData contents
+        console.log("FormData contents:");
+        for (const pair of formData.entries()) {
+          console.log('FormData entry:', pair[0], pair[1]);
+        }
+
+        console.log("Sending request to:", `${BASE_URL}/files/upload`);
+        console.log("Using API key:", getApiKey(domain));
+        
+        const response = await fetch(`${BASE_URL}/files/upload`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${getApiKey(domain)}`
+          },
+          body: formData
+        });
+
+        console.log("Upload response status:", response.status);
+        console.log("Upload response headers:", Object.fromEntries(response.headers.entries()));
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Upload error details:", errorText);
+          console.error("Full error response:", response);
+          throw new Error(`Upload failed: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        console.log("File upload successful! Response data:", data);
+        
+        // Add file to attached files with the response data
+        const fileId = data.file_id || data.id;
+        console.log("Using file ID:", fileId);
+        
+        setAttachedFiles(prev => [...prev, { 
+          file, 
+          id: fileId || Math.random().toString(36).substr(2, 9),
+          upload_file_id: fileId // Store the upload_file_id for chat message
+        }]);
+        
+        console.log("File successfully attached to the chat");
+        setShowAttachmentOptions(false);
+      } catch (error: any) {
+        console.error("File upload error:", error);
+        setMessages(prev => [...prev, { 
+          type: "error", 
+          content: `Failed to upload file: ${error.message}` 
+        }]);
+      }
     }
   };
 
@@ -163,17 +308,124 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ assistantName = "Xpectrum
     fileInputRef.current?.click();
   };
 
-  // Handle link submission
-  const handleLinkSubmit = (e: React.FormEvent) => {
+  // Function to check if a URL actually returns an image
+  const checkImageExists = (url: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  };
+
+  // Update isValidImageUrl to be async and include actual image verification
+  const isValidImageUrl = async (url: string): Promise<boolean> => {
+    try {
+      // Check for base64 image
+      if (url.startsWith('data:image/')) {
+        const validBase64Formats = [
+          'data:image/jpeg;base64,',
+          'data:image/jpg;base64,',
+          'data:image/png;base64,',
+          'data:image/gif;base64,',
+          'data:image/webp;base64,'
+        ];
+        return validBase64Formats.some(format => url.startsWith(format));
+      }
+
+      const parsedUrl = new URL(url);
+      
+      // Basic URL validation
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        return false;
+      }
+
+      // Try to actually load the image
+      const isValidImage = await checkImageExists(url);
+      if (isValidImage) {
+        return true;
+      }
+
+      // Rest of the existing validation...
+      const path = parsedUrl.pathname.toLowerCase();
+      
+      // Check common image extensions
+      const validExtensions = ['.png', '.jpg', '.jpeg', '.webp', '.gif'];
+      const hasValidExtension = validExtensions.some(ext => path.endsWith(ext));
+      
+      // Check for common image hosting patterns
+      const imageHostingPatterns = [
+        /\.(cloudinary\.com)/,
+        /(images|img|photos)\./,
+        /(imgur\.com)/,
+        /(\.?unsplash\.com)/,
+        /(\.?pexels\.com)/,
+        /\.(googleusercontent\.com.*=w)/,
+        /(\.?giphy\.com)/,
+        /(\.?flickr\.com)/,
+        /(\.?photobucket\.com)/,
+        /\.(amazonaws\.com)/,
+        /\.(digitaloceanspaces\.com)/,
+        /(\.?imgix\.net)/,
+        /(\.?staticflickr\.com)/,
+        /\.(blob\.core\.windows\.net)/,
+        /\.(storage\.googleapis\.com)/
+      ];
+      
+      const isImageHosting = imageHostingPatterns.some(pattern => pattern.test(url.toLowerCase()));
+      
+      // Check for image-specific query parameters
+      const imageQueryParams = ['format=jpg', 'format=png', 'format=jpeg', 'format=webp', 'format=gif'];
+      const hasImageQueryParam = imageQueryParams.some(param => 
+        parsedUrl.search.toLowerCase().includes(param)
+      );
+      
+      return hasValidExtension || isImageHosting || hasImageQueryParam;
+      
+    } catch (error) {
+      console.error('Error validating image URL:', error);
+      return false;
+    }
+  };
+
+  // Update handleLinkSubmit to handle async validation
+  const handleLinkSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (linkValue.trim()) {
-      // Add link to query
-      setQuery(prev => prev + (prev ? " " : "") + linkValue);
-      
-      // Close link input and reset value
-      setShowLinkInput(false);
-      setLinkValue("");
-      setShowAttachmentOptions(false);
+      setIsLoading(true);
+      try {
+        const isValid = await isValidImageUrl(linkValue);
+        if (!isValid) {
+          setMessages(prev => [...prev, { 
+            type: "error", 
+            content: "Invalid image URL. Please provide either a valid image URL (PNG, JPG, JPEG, WEBP, GIF) or a base64 encoded image." 
+          }]);
+          setShowLinkInput(false);
+          setLinkValue("");
+          setShowAttachmentOptions(false);
+          return;
+        }
+
+        // Add link as attachment
+        setAttachedFiles(prev => [...prev, { 
+          id: Math.random().toString(36).substr(2, 9),
+          url: linkValue,
+          file: new File([], '') // Minimal file object required by interface
+        }]);
+        
+        // Close link input and reset value
+        setShowLinkInput(false);
+        setLinkValue("");
+        setShowAttachmentOptions(false);
+      } catch (error) {
+        console.error('Error validating image URL:', error);
+        setMessages(prev => [...prev, { 
+          type: "error", 
+          content: "Error validating image URL. Please try again." 
+        }]);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -257,85 +509,63 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ assistantName = "Xpectrum
     }
   };
 
-  const sendMessage = async () => {
-    if ((!query.trim() && attachedFiles.length === 0) || isLoading) return;
+  // Use a suggested query
+  const handleSuggestionClick = (suggestion: string) => {
+    setQuery(suggestion);
+    // Auto-send the suggested query
+    setTimeout(() => {
+      sendMessage(suggestion);
+    }, 100);
+    setShowSuggestions(false);
+  };
 
-    setSearchQuery(query || "Analyzing attachments...");
+  const sendMessage = async (forcedQuery?: string) => {
+    const messageText = forcedQuery || query;
+    if ((!messageText.trim() && attachedFiles.length === 0) || isLoading) return;
 
-    let filePayload = [];
+    setSearchQuery(messageText || "Analyzing attachments...");
+    setShowSuggestions(false);
 
-    if (attachedFiles.length > 0) {
-      try {
-        setIsUploading(true);
-        
-        // Process all files
-        for (const { file } of attachedFiles) {
-          const fileData = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            
-            reader.onload = () => {
-              try {
-                const base64Content = reader.result.toString().split(',')[1];
-                resolve({
-                  name: file.name,
-                  content: base64Content,
-                  type: file.type
-                });
-              } catch (error) {
-                reject(error);
-              }
-            };
-            reader.onerror = (error) => reject(error);
-            reader.onprogress = (event) => {
-              if (event.lengthComputable) {
-                const progress = Math.round((event.loaded / event.total) * 100);
-                setUploadProgress(progress);
-              }
-            };
-            
-            reader.readAsDataURL(file);
-          });
-
-          filePayload.push(fileData);
-        }
-
-        setUploadProgress(100);
-        setTimeout(() => {
-          setIsUploading(false);
-          setUploadProgress(0);
-        }, 500);
-      } catch (error) {
-        console.error("File attachment error:", error);
-        setMessages(prev => [...prev, { type: "error", content: "Failed to attach files. Please try again." }]);
-        setAttachedFiles([]);
-        setIsUploading(false);
-        setUploadProgress(0);
-        setIsLoading(false);
-        return;
-      }
-    }
-
-    // Structure the payload
+    // Structure the payload for the chat API
     const payload = {
       inputs: {},
-      query: query,
+      query: messageText,
       response_mode: "streaming",
       conversation_id: conversationId,
       user: "abc-123",
-      files: filePayload
+      files: attachedFiles.map(file => {
+        if (file.url) {
+          // For remote URLs
+          return {
+            type: "image",
+            transfer_method: "remote_url",
+            url: file.url
+          };
+        } else {
+          // For uploaded files
+          return {
+            type: "image",
+            transfer_method: "local_file",
+            upload_file_id: file.upload_file_id
+          };
+        }
+      })
     };
 
-    console.log("Sending payload:", JSON.stringify(payload));
+    console.log("Sending chat API request with payload:", JSON.stringify(payload, null, 2));
 
     setIsLoading(true);
     
-    // Add user message with file info
-    let userMessageContent = query;
-    if (attachedFiles.length > 0) {
-      const fileNames = attachedFiles.map(f => f.file.name).join(", ");
-      userMessageContent += `\n[Attached: ${fileNames}]`;
-    }
-    setMessages(prev => [...prev, { type: "user", content: userMessageContent }]);
+    // Add user message without the attachment text
+    setMessages(prev => [...prev, { 
+      type: "user", 
+      content: messageText,
+      image: attachedFiles.length > 0 && !attachedFiles[0].url ? {
+        url: URL.createObjectURL(attachedFiles[0].file),
+        caption: attachedFiles[0].file.name
+      } : undefined,
+      link: attachedFiles.length > 0 && attachedFiles[0].url ? attachedFiles[0].url : undefined
+    }]);
     setQuery("");
     setAttachedFiles([]);
 
@@ -345,12 +575,10 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ assistantName = "Xpectrum
         setIsGenerating(true);
       }, 1000);
 
-      const apiKey = getApiKey(assistantName); // Get the correct API key
-
-      const response = await fetch(`${API_BASE_URL}/chat-messages`, { // Use the constant base URL
+      const response = await fetch(`${BASE_URL}/chat-messages`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${apiKey}`, // Use the dynamically selected API key
+          Authorization: `Bearer ${getApiKey(domain as keyof typeof API_KEYS)}`,
           "Content-Type": "application/json",
           Accept: "text/event-stream"
         },
@@ -359,7 +587,19 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ assistantName = "Xpectrum
       } as RequestInit);
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error("Chat API error details:", errorText);
+        console.error("Full error response:", response);
+        
+        // Try to parse the error as JSON if possible
+        try {
+          const errorJson = JSON.parse(errorText);
+          console.error("Parsed error JSON:", errorJson);
+        } catch (e) {
+          console.error("Error text is not valid JSON");
+        }
+        
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
 
       const reader = response.body?.getReader();
@@ -429,11 +669,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ assistantName = "Xpectrum
   };
 
   const handleReset = () => {
-    // Reset messages to initial state
+    // Reset messages to initial state with correct domain config
     setMessages([
       {
         type: "bot" as const,
-        content: `Welcome to ${assistantName}! How can I help you today?`
+        content: domainConfig.welcomeMessage
       }
     ]);
     // Clear the input field
@@ -445,6 +685,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ assistantName = "Xpectrum
     // Reset status indicators
     setSearchQuery(null);
     setIsGenerating(false);
+    // Show suggestions again
+    setShowSuggestions(true);
   };
 
   // Handle textarea key presses
@@ -457,9 +699,51 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ assistantName = "Xpectrum
     }
   };
 
+  // Get domain-specific color theme
+  const getDomainColorTheme = () => {
+    switch(domain) {
+      case 'Insurance':
+        return {
+          primary: 'from-blue-600 to-blue-500',
+          secondary: 'bg-blue-50',
+          accent: 'text-blue-600',
+          hover: 'hover:bg-blue-100',
+          button: 'bg-blue-600 hover:bg-blue-700',
+          messageUser: 'bg-blue-600 text-white',
+          messageBot: 'bg-white',
+          light: 'bg-blue-50/30'
+        };
+      case 'Hospitality':
+        return {
+          primary: 'from-amber-600 to-amber-500',
+          secondary: 'bg-amber-50',
+          accent: 'text-amber-600',
+          hover: 'hover:bg-amber-100',
+          button: 'bg-amber-600 hover:bg-amber-700',
+          messageUser: 'bg-amber-600 text-white',
+          messageBot: 'bg-white',
+          light: 'bg-amber-50/30'
+        };
+      case 'HRMS':
+      default:
+        return {
+          primary: 'from-purple-600 to-pink-500',
+          secondary: 'bg-purple-50',
+          accent: 'text-xpectrum-purple',
+          hover: 'hover:bg-xpectrum-lightpurple',
+          button: 'bg-xpectrum-purple hover:bg-xpectrum-darkpurple',
+          messageUser: 'bg-xpectrum-purple text-white',
+          messageBot: 'bg-white',
+          light: 'bg-xpectrum-lightpurple/30'
+        };
+    }
+  };
+
+  const theme = getDomainColorTheme();
+
   return (
     <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6 md:bottom-8 md:right-8">
-      {/* Chat Button - Updated icon and visibility */}
+      {/* Chat Button - Updated with domain-specific colors */}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -469,7 +753,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ assistantName = "Xpectrum
             setIsOpen(true);
           }
         }}
-        className={`bg-gradient-to-br from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white rounded-full p-4 sm:p-5 transition-all duration-300 flex items-center justify-center chat-button shadow-xl z-[100] fixed bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-8 relative border-2 border-white/50 animate-pulse-subtle ${isLoading ? 'glowing-blob' : ''} ${isOpen ? 'opacity-50 hover:opacity-100' : ''}`}
+        className={`bg-gradient-to-br ${theme.primary} text-white rounded-full p-4 sm:p-5 transition-all duration-300 flex items-center justify-center chat-button shadow-xl z-[100] fixed bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-8 relative border-2 border-white/50 animate-pulse-subtle ${isLoading ? 'glowing-blob' : ''} ${isOpen ? 'opacity-50 hover:opacity-100' : ''}`}
         style={{ animationDuration: '3s' }}
       >
         <img
@@ -496,27 +780,25 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ assistantName = "Xpectrum
             background: "#E5DEFF"
           }}
         >
-          {/* Header - updated styling */}
+          {/* Header */}
           <div className="p-4 rounded-t-3xl flex justify-between items-center bg-white border-b border-gray-200">
-            {/* Left side with logo, name, and blob */}
             <div className="flex items-center">
               <img src="/xpectrumLogo.png" alt="Xpectrum Logo" className="h-6 mr-2" />
-              <span className="font-semibold text-gray-800 mr-2">{assistantName}</span>
+              <span className="font-semibold text-gray-800 mr-2">{getAssistantName(domain as keyof typeof DOMAIN_CONFIG)}</span>
               <span className={`siri-blob ${isLoading ? 'is-loading' : ''}`}></span>
             </div>
             
-            {/* Right side controls */}
             <div className="flex items-center space-x-1">
-              <button className="text-gray-500 hover:text-xpectrum-purple p-1 rounded-full" title="Analytics">
+              <button className={`text-gray-500 ${theme.hover} p-1 rounded-full`} title="Analytics">
                 <BarChart2 size={18} />
               </button>
-              <button className="text-gray-500 hover:text-xpectrum-purple p-1 rounded-full" title="Help">
+              <button className={`text-gray-500 ${theme.hover} p-1 rounded-full`} title="Help">
                 <HelpCircle size={18} />
               </button>
-              <button onClick={handleReset} className="text-gray-500 hover:text-xpectrum-purple p-1 rounded-full" title="Reset Chat">
+              <button onClick={handleReset} className={`text-gray-500 ${theme.hover} p-1 rounded-full`} title="Reset Chat">
                 <RefreshCw size={18} />
               </button>
-              <button onClick={handleClose} className="text-gray-500 hover:text-xpectrum-purple p-1 rounded-full" title="Close Chat">
+              <button onClick={handleClose} className={`text-gray-500 ${theme.hover} p-1 rounded-full`} title="Close Chat">
                 <X size={20} />
               </button>
             </div>
@@ -533,61 +815,40 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ assistantName = "Xpectrum
                   <div 
                     className={`inline-block px-4 py-3 rounded-3xl shadow-sm ${
                       msg.type === "user"
-                        ? "bg-xpectrum-purple text-white"
+                        ? theme.messageUser
                         : msg.type === "bot"
-                        ? "bg-white"
+                        ? theme.messageBot
                         : "bg-red-100 text-red-800"
                     } text-base`}
                   >
                     {msg.type === "bot" ? (
                       <div className="markdown-body">
-                        <ReactMarkdown components={{
-                          p: ({node, ...props}) => <p {...props} />,
-                          strong: ({node, ...props}) => <strong {...props} />,
-                          em: ({node, ...props}) => <em {...props} />,
-                        }}>
-                          {msg.content || ''}
+                        <ReactMarkdown>
+                          {msg.content}
                         </ReactMarkdown>
-                        
-                        {/* Image with Explore button if available */}
-                        {msg.image && (
-                          <div className="mt-3 relative overflow-hidden rounded-lg">
-                            <img 
-                              src={msg.image.url} 
-                              alt={msg.image.caption || "Response image"} 
-                              className="w-full h-auto object-cover rounded-lg"
-                            />
-                            <button className="absolute top-2 right-2 bg-white bg-opacity-70 text-gray-800 px-3 py-1 text-xs rounded-full flex items-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                              </svg>
-                              Explore
-                            </button>
-                          </div>
-                        )}
                       </div>
                     ) : (
-                      <div className="whitespace-pre-wrap break-words">{msg.content || ''}</div>
+                      <div className="whitespace-pre-wrap break-words">
+                        {msg.content}
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
             ))}
-            
-            {/* Typing indicator / Loading Animation - Condition changed to isGenerating */}
-            {isGenerating && (
-              <div className="flex justify-start">
-                <div className="inline-flex items-center px-4 py-3 rounded-3xl bg-white shadow-sm space-x-2">
-                  {/* Gradient Text */}
-                  <span className="loading-text-gradient text-sm">Generating response</span>
-                  {/* Glowing Dots */}
-                  <div className="glowing-dots">
-                    <span className="dot"></span>
-                    <span className="dot"></span>
-                    <span className="dot"></span>
-                  </div>
-                </div>
+
+            {/* Suggested Queries */}
+            {showSuggestions && domainConfig.suggestedQueries && (
+              <div className="flex flex-wrap gap-2 mt-4">
+                {domainConfig.suggestedQueries.map((suggestion, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className={`px-3 py-1.5 rounded-full text-sm ${theme.secondary} ${theme.accent} ${theme.hover} transition-colors`}
+                  >
+                    {suggestion}
+                  </button>
+                ))}
               </div>
             )}
 
@@ -595,322 +856,33 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ assistantName = "Xpectrum
           </div>
 
           {/* Input Area */}
-          <div className="p-3 border-t border-gray-200 bg-white rounded-b-3xl relative">
-            {/* Link Input Modal */}
-            {showLinkInput && (
-              <div className="absolute bottom-[calc(100%+0.5rem)] left-0 right-0 bg-white rounded-md p-3 z-20 shadow-lg border border-gray-200 link-input-container mx-2">
-                <form onSubmit={handleLinkSubmit} className="flex flex-col">
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="text-sm font-medium text-gray-700">Enter URL</label>
-                    <button 
-                      type="button"
-                      onClick={() => setShowLinkInput(false)}
-                      className="text-gray-400 hover:text-gray-500"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                  <input
-                    ref={linkInputRef}
-                    type="url"
-                    value={linkValue}
-                    onChange={(e) => setLinkValue(e.target.value)}
-                    placeholder="https://example.com"
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-xpectrum-purple focus:border-transparent"
-                    required
-                  />
-                  <div className="flex justify-end mt-2">
-                    <button
-                      type="submit"
-                      className="bg-xpectrum-purple text-white px-4 py-1 rounded-md text-sm hover:bg-xpectrum-darkpurple transition-colors"
-                    >
-                      Add
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
-
-            {/* Hidden File Input */}
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              className="hidden"
-              accept="image/*,.pdf,.doc,.docx,.txt"
-            />
-
-            {/* Attached Files Display */}
-            {(attachedFiles.length > 0 || isUploading) && (
-              <div className="flex flex-wrap gap-2 mb-2 px-2">
-                {attachedFiles.map(({ file, id }) => (
-                  <div key={id} className="text-xs flex items-center gap-1 bg-xpectrum-lightpurple/30 rounded-lg py-1.5 px-2">
-                    {file.type.startsWith('image/') ? (
-                      <div className="flex items-center min-w-0">
-                        <div className="w-5 h-5 mr-1.5 rounded overflow-hidden border border-gray-300 flex-shrink-0">
-                          <img 
-                            src={URL.createObjectURL(file)} 
-                            alt="Preview" 
-                            className="w-full h-full object-cover" 
-                          />
-                        </div>
-                        <span className="text-gray-700 truncate max-w-[120px]">{file.name}</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center min-w-0">
-                        <Paperclip size={12} className="text-xpectrum-purple flex-shrink-0 mr-1.5" />
-                        <span className="text-gray-700 truncate max-w-[120px]">{file.name}</span>
-                      </div>
-                    )}
-                    <button 
-                      onClick={() => removeFile(id)} 
-                      className="text-gray-500 hover:text-red-500 ml-1 flex-shrink-0 p-0.5 rounded-full hover:bg-gray-100"
-                      title="Remove attachment"
-                    >
-                      <X size={12} />
-                    </button>
-                  </div>
-                ))}
-
-                {/* Upload progress */}
-                {isUploading && (
-                  <div className="text-xs flex items-center gap-2 bg-xpectrum-lightpurple/30 rounded-lg py-1.5 px-2">
-                    <Loader size={12} className="text-xpectrum-purple animate-spin flex-shrink-0" />
-                    <div className="w-16 bg-gray-200 rounded-full h-1.5 overflow-hidden flex-shrink-0">
-                      <div 
-                        className="bg-xpectrum-purple h-full transition-all duration-300 ease-out"
-                        style={{ width: `${uploadProgress}%` }} 
-                      />
-                    </div>
-                    <span className="text-gray-700 min-w-[30px] flex-shrink-0">{uploadProgress}%</span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Input Container */}
-            <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1 relative">
-              {/* Attachment button */}
-              <div className="relative attachment-area flex-shrink-0">
-                <button
-                  onClick={() => setShowAttachmentOptions(!showAttachmentOptions)}
-                  className={`p-2 rounded-full ${
-                    isLoading
-                      ? 'text-gray-400 cursor-not-allowed'
-                      : 'text-xpectrum-purple hover:bg-xpectrum-lightpurple'
-                  } transition-colors mr-1`}
-                  title="Attach File"
-                  disabled={isLoading}
-                >
-                  <Paperclip size={20} />
-                </button>
-                {showAttachmentOptions && (
-                  <div className="absolute bottom-full left-0 mb-2 w-36 bg-white rounded-md py-1 z-10 shadow-lg border border-gray-200">
-                    <button
-                      onClick={() => {
-                        setShowLinkInput(true);
-                        setShowAttachmentOptions(false);
-                      }}
-                      className="block w-full text-left px-3 py-2 text-gray-800 hover:bg-gray-100 flex items-center gap-2 text-sm"
-                    >
-                      <LinkIcon size={16} />
-                      Attach Link
-                    </button>
-                    <button
-                      onClick={handleAttachMediaClick}
-                      className="block w-full text-left px-3 py-2 text-gray-800 hover:bg-gray-100 flex items-center gap-2 text-sm"
-                    >
-                      <ImageIcon size={16} />
-                      Attach Media
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Textarea */}
+          <div className="p-3 border-t border-gray-200 bg-white rounded-b-3xl">
+            <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1">
               <textarea
                 ref={textareaRef}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
                 className="flex-1 px-3 py-2.5 min-h-[45px] max-h-[120px] focus:outline-none resize-none bg-transparent border-none text-sm"
-                placeholder="Type a message..."
+                placeholder={domainConfig.placeholderText}
                 disabled={isLoading}
                 rows={1}
               />
-
-              {/* Voice input and send buttons */}
-              <div className="flex items-center flex-shrink-0">
-                <button
-                  onClick={toggleListening}
-                  disabled={isLoading}
-                  className={`p-2 rounded-full transition-colors mr-1 ${
-                    isListening ? 'text-xpectrum-purple bg-xpectrum-lightpurple' : 'text-gray-500 hover:bg-gray-100'
-                  }`}
-                  title={isListening ? "Stop Listening" : "Start Listening"}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
-                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                    <line x1="12" x2="12" y1="19" y2="22"></line>
-                  </svg>
-                </button>
-                
-                <button
-                  onClick={sendMessage}
-                  disabled={isLoading || (!query.trim() && attachedFiles.length === 0)}
-                  className={`p-2 rounded-full transition-colors ${
-                    (!query.trim() && attachedFiles.length === 0) || isLoading
-                      ? 'text-gray-400 cursor-not-allowed'
-                      : 'text-xpectrum-purple hover:bg-xpectrum-lightpurple'
-                  }`}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                  </svg>
-                </button>
-              </div>
+              <button
+                onClick={() => sendMessage()}
+                disabled={isLoading || !query.trim()}
+                className={`p-2 rounded-full transition-colors ${
+                  !query.trim() || isLoading
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : theme.accent
+                }`}
+              >
+                <MessageSquare size={20} />
+              </button>
             </div>
           </div>
         </div>
       )}
-      
-      {/* CSS for animations and styling */}
-      <style>{`
-        .markdown-body p {
-          margin-bottom: 0.5rem;
-        }
-        .markdown-body p:last-child {
-          margin-bottom: 0;
-        }
-
-        /* Siri Blob Style */
-        .siri-blob {
-          display: inline-block;
-          width: 14px; /* Increased size */
-          height: 14px; /* Increased size */
-          border-radius: 50%;
-          background: linear-gradient(135deg, #8B5CF6, #D946EF, #0EA5E9, #8B5CF6); /* Added purple at the end for smoother loop */
-          background-size: 300% 300%; /* Larger size for animation */
-          animation: blob-gradient-flow 4s ease-in-out infinite; /* Added animation */
-        }
-        
-        @keyframes blob-gradient-flow {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-
-        /* Add glow effect when loading */
-        .siri-blob.is-loading {
-          animation: blob-gradient-flow 4s ease-in-out infinite, blob-glow 2s ease-in-out infinite alternate; /* Combine animations */
-        }
-
-        @keyframes blob-glow {
-          from {
-             box-shadow: 0 0 3px 1px rgba(229, 222, 255, 0.7), 0 0 5px 2px rgba(139, 92, 246, 0.5); /* Subtle glow */
-          }
-          to {
-             box-shadow: 0 0 6px 3px rgba(229, 222, 255, 1), 0 0 10px 5px rgba(139, 92, 246, 0.7); /* More intense glow */
-          }
-        }
-
-        /* Glowing Dots Loading Indicator */
-        .glowing-dots {
-          display: flex;
-          gap: 4px;
-        }
-        .glowing-dots .dot {
-          width: 8px;
-          height: 8px;
-          background-color: #8B5CF6; /* xpectrum-purple */
-          border-radius: 50%;
-          animation: glow-dot-animation 1.4s infinite ease-in-out both;
-        }
-        .glowing-dots .dot:nth-child(1) { animation-delay: -0.32s; }
-        .glowing-dots .dot:nth-child(2) { animation-delay: -0.16s; }
-        .glowing-dots .dot:nth-child(3) { animation-delay: 0s; }
-
-        @keyframes glow-dot-animation {
-          0%, 80%, 100% { 
-            transform: scale(0.8);
-            opacity: 0.5;
-            box-shadow: 0 0 3px #8B5CF6;
-          } 
-          40% { 
-            transform: scale(1.0); 
-            opacity: 1;
-            box-shadow: 0 0 8px 2px #8B5CF6;
-          } 
-        }
-
-        /* Gradient Text */
-        .loading-text-gradient {
-          font-weight: 500; /* Medium weight */
-          background: linear-gradient(90deg, #8B5CF6, #D946EF, #0EA5E9);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-          /* Add a subtle animation for the gradient */
-          animation: gradient-flow 3s ease-in-out infinite;
-          background-size: 200% 100%; /* Make background wider for flow effect */
-        }
-
-        @keyframes gradient-flow {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-
-        /* Glowing Blob Animation (for chat button) */
-        @keyframes glow {
-          0%, 100% {
-            box-shadow: 0 0 8px 3px #E5DEFF, 0 0 15px 6px #8B5CF6;
-            opacity: 0.8;
-          }
-          50% {
-            box-shadow: 0 0 20px 10px #E5DEFF, 0 0 35px 18px #8B5CF6;
-            opacity: 1;
-          }
-        }
-        .glowing-blob::before {
-          content: '';
-          position: absolute;
-          top: -5px; left: -5px; right: -5px; bottom: -5px; /* Slightly larger than button */
-          border-radius: 50%;
-          animation: glow 2.5s ease-in-out infinite;
-          z-index: -1; /* Behind the button content */
-          pointer-events: none; /* Allow clicking the button */
-        }
-
-        /* File upload animation */
-        @keyframes uploadPulse {
-          0%, 100% { opacity: 0.6; }
-          50% { opacity: 1; }
-        }
-        
-        .upload-pulse {
-          animation: uploadPulse 1.5s ease-in-out infinite;
-        }
-
-        /* Subtle Pulse for Button */
-        @keyframes pulse-subtle {
-          0%, 100% {
-            transform: scale(1);
-            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
-          }
-          50% {
-            transform: scale(1.03);
-            box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
-          }
-        }
-        .animate-pulse-subtle {
-          animation-name: pulse-subtle;
-          animation-timing-function: ease-in-out;
-          animation-iteration-count: infinite;
-        }
-      `}</style>
     </div>
   );
 };
