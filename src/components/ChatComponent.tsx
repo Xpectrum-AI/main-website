@@ -826,11 +826,29 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                         <ReactMarkdown>
                           {msg.content}
                         </ReactMarkdown>
+                        {msg.content === "" && isGenerating && (
+                          <div className="flex space-x-1 mt-2 items-center">
+                            <div className="w-1 h-1 bg-gray-500 rounded-full animate-bounce"></div>
+                            <div className="w-1 h-1 bg-gray-500 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                            <div className="w-1 h-1 bg-gray-500 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+                          </div>
+                        )}
                       </div>
                     ) : (
-                      <div className="whitespace-pre-wrap break-words">
-                        {msg.content}
-                      </div>
+                      <>
+                        <div className="whitespace-pre-wrap break-words">
+                          {msg.content}
+                        </div>
+                        {msg.image && (
+                          <div className="mt-2">
+                            <img 
+                              src={msg.image.url} 
+                              alt={msg.image.caption || 'Attached image'} 
+                              className="max-w-full h-auto rounded-lg"
+                            />
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
@@ -856,31 +874,229 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           </div>
 
           {/* Input Area */}
-          <div className="p-3 border-t border-gray-200 bg-white rounded-b-3xl">
+          <div className="p-3 border-t border-gray-200 bg-white rounded-b-3xl relative">
+            {/* Link Input Modal */}
+            {showLinkInput && (
+              <div className="absolute bottom-[calc(100%+0.5rem)] left-0 right-0 bg-white rounded-md p-3 z-20 shadow-lg border border-gray-200 link-input-container mx-2">
+                <form onSubmit={handleLinkSubmit} className="flex flex-col">
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-sm font-medium text-gray-700">Enter URL</label>
+                    <button 
+                      type="button"
+                      onClick={() => setShowLinkInput(false)}
+                      className="text-gray-400 hover:text-gray-500"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                  <input
+                    ref={linkInputRef}
+                    type="url"
+                    value={linkValue}
+                    onChange={(e) => setLinkValue(e.target.value)}
+                    placeholder="https://example.com"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-xpectrum-purple focus:border-transparent"
+                    required
+                  />
+                  <div className="flex justify-end mt-2">
+                    <button
+                      type="submit"
+                      className={`${theme.button} text-white px-4 py-1 rounded-md text-sm transition-colors`}
+                    >
+                      Add
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* Hidden File Input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              accept="image/jpeg,image/png,image/gif,image/webp"
+            />
+
+            {/* Attached Files Display */}
+            {(attachedFiles.length > 0 || isUploading) && (
+              <div className="flex flex-wrap gap-2 mb-2 px-2">
+                {attachedFiles.map(({ file, id, url }) => (
+                  <div key={id} className={`text-xs flex items-center gap-1 ${theme.light} rounded-lg py-1.5 px-2`}>
+                    {url ? (
+                      // Link preview
+                      <div className="flex items-center min-w-0">
+                        <LinkIcon className={`h-4 w-4 ${theme.accent} flex-shrink-0 mr-1.5`} />
+                        <span className="text-gray-700 truncate max-w-[120px]">{new URL(url).hostname}</span>
+                      </div>
+                    ) : (
+                      // File preview
+                      <div className="flex items-center min-w-0">
+                        <div className="w-8 h-8 rounded overflow-hidden mr-2 flex-shrink-0">
+                          <img 
+                            src={URL.createObjectURL(file)} 
+                            alt="Preview" 
+                            className="w-full h-full object-cover" 
+                          />
+                        </div>
+                        <span className="text-gray-700 truncate max-w-[120px]">{file.name}</span>
+                      </div>
+                    )}
+                    <button 
+                      onClick={() => removeFile(id)} 
+                      className="text-gray-500 hover:text-red-500 ml-1 flex-shrink-0 p-0.5 rounded-full hover:bg-gray-100"
+                      title="Remove attachment"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+
+                {/* Upload progress */}
+                {isUploading && (
+                  <div className={`text-xs flex items-center gap-2 ${theme.light} rounded-lg py-1.5 px-2`}>
+                    <Loader size={12} className={`${theme.accent} animate-spin flex-shrink-0`} />
+                    <div className="w-16 bg-gray-200 rounded-full h-1.5 overflow-hidden flex-shrink-0">
+                      <div 
+                        className={`${theme.button} h-full transition-all duration-300 ease-out`}
+                        style={{ width: `${uploadProgress}%` }} 
+                      />
+                    </div>
+                    <span className="text-gray-700 min-w-[30px] flex-shrink-0">{uploadProgress}%</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Input Container */}
             <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1">
-              <textarea
-                ref={textareaRef}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="flex-1 px-3 py-2.5 min-h-[45px] max-h-[120px] focus:outline-none resize-none bg-transparent border-none text-sm"
-                placeholder={domainConfig.placeholderText}
-                disabled={isLoading}
-                rows={1}
-              />
-              <button
-                onClick={() => sendMessage()}
-                disabled={isLoading || !query.trim()}
-                className={`p-2 rounded-full transition-colors ${
-                  !query.trim() || isLoading
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : theme.accent
-                }`}
-              >
-                <MessageSquare size={20} />
-              </button>
+              {/* Attachment button */}
+              <div className="relative attachment-area flex-shrink-0">
+                <button
+                  onClick={() => setShowAttachmentOptions(!showAttachmentOptions)}
+                  className={`p-2 rounded-full transition-colors mr-1 ${
+                    isLoading
+                      ? 'text-gray-400 cursor-not-allowed'
+                      : `${theme.accent} ${theme.hover}`
+                  }`}
+                  title="Attach File"
+                  disabled={isLoading}
+                >
+                  <Paperclip size={20} />
+                </button>
+                {showAttachmentOptions && (
+                  <div className="absolute bottom-full left-0 mb-2 w-36 bg-white rounded-md py-1 z-10 shadow-lg border border-gray-200">
+                    <button
+                      onClick={() => {
+                        setShowLinkInput(true);
+                        setShowAttachmentOptions(false);
+                      }}
+                      className="block w-full text-left px-3 py-2 text-gray-800 hover:bg-gray-100 flex items-center gap-2 text-sm"
+                    >
+                      <LinkIcon size={16} />
+                      Attach Link
+                    </button>
+                    <button
+                      onClick={handleAttachMediaClick}
+                      className="block w-full text-left px-3 py-2 text-gray-800 hover:bg-gray-100 flex items-center gap-2 text-sm"
+                    >
+                      <ImageIcon size={16} />
+                      Attach Media
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Textarea and loading dots */}
+              <div className="flex-1 flex items-center">
+                <textarea
+                  ref={textareaRef}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="flex-1 px-3 py-2.5 min-h-[45px] max-h-[120px] focus:outline-none resize-none bg-transparent border-none text-sm"
+                  placeholder={domainConfig.placeholderText}
+                  disabled={isLoading}
+                  rows={1}
+                />
+                {isGenerating && (
+                  <div className="flex space-x-1 mr-2">
+                    <div className="w-1 h-1 bg-gray-500 rounded-full animate-bounce"></div>
+                    <div className="w-1 h-1 bg-gray-500 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                    <div className="w-1 h-1 bg-gray-500 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+                  </div>
+                )}
+              </div>
+
+              {/* Voice input and send button */}
+              <div className="flex items-center flex-shrink-0">
+                <button
+                  onClick={toggleListening}
+                  disabled={isLoading}
+                  className={`p-2 rounded-full transition-colors mr-1 ${
+                    isListening ? `${theme.accent} ${theme.secondary}` : 'text-gray-500 hover:bg-gray-100'
+                  }`}
+                  title={isListening ? "Stop Listening" : "Start Listening"}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" x2="12" y1="19" y2="22"></line>
+                  </svg>
+                </button>
+
+                <button
+                  onClick={() => sendMessage()}
+                  disabled={isLoading || (!query.trim() && attachedFiles.length === 0)}
+                  className={`p-2 rounded-full transition-colors ${
+                    (!query.trim() && attachedFiles.length === 0) || isLoading
+                      ? 'text-gray-400 cursor-not-allowed'
+                      : theme.accent
+                  }`}
+                >
+                  <MessageSquare size={20} />
+                </button>
+              </div>
             </div>
           </div>
+
+          {/* Add CSS for typing dots animation */}
+          <style>{`
+            .typing-dots {
+              display: inline-flex;
+              align-items: center;
+              height: 20px;
+              margin-left: 4px;
+            }
+            
+            .typing-dots span {
+              width: 4px;
+              height: 4px;
+              margin: 0 1px;
+              background-color: currentColor;
+              border-radius: 50%;
+              display: inline-block;
+              opacity: 0.4;
+            }
+            
+            .typing-dots span:nth-child(1) {
+              animation: dotFade 1s infinite 0.1s;
+            }
+            
+            .typing-dots span:nth-child(2) {
+              animation: dotFade 1s infinite 0.2s;
+            }
+            
+            .typing-dots span:nth-child(3) {
+              animation: dotFade 1s infinite 0.3s;
+            }
+            
+            @keyframes dotFade {
+              0%, 100% { opacity: 0.4; }
+              50% { opacity: 1; }
+            }
+          `}</style>
         </div>
       )}
     </div>
