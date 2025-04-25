@@ -375,7 +375,7 @@ const HRMS = () => {
         </section>
       </main>
       {/* Chat Component Integrated */}
-      <ChatComponent assistantName="HRMS Assistant" />
+      <ChatComponent assistantName="HRMS Assistant" serviceType="HR" />
     </>
   );
 };

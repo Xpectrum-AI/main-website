@@ -53,6 +53,7 @@ const FlowchartSection: React.FC = () => {
   const flowData = [
     {
       source: "HR AI Agent",
+      buttonText: "HRMS",
       steps: [
         "Employee Info",
         "Salary Details",
@@ -67,6 +68,7 @@ const FlowchartSection: React.FC = () => {
     },
     {
       source: "Insurance AI Agent",
+      buttonText: "Insurance",
       steps: [
         "Validate Input",
         "Search most suitable plans",
@@ -78,6 +80,7 @@ const FlowchartSection: React.FC = () => {
     },
     {
       source: "Hospitality AI Agent",
+      buttonText: "Hospitality",
       steps: [
         "Validate Input",
         "Find Hotels",
@@ -334,8 +337,8 @@ const FlowchartSection: React.FC = () => {
     title.setAttribute('font-weight', 'bold');
     title.setAttribute('fill', selectedNode === 'analytics' ? analyticsFlow.color : flowData[activeFlow].color);
     title.textContent = selectedNode === 'analytics' 
-      ? `${flowData[activeFlow].source} Analytics Workflow`
-      : `${flowData[activeFlow].source} Workflow`;
+      ? `One ${flowData[activeFlow].source} Analytics UseCase`
+      : `One ${flowData[activeFlow].source} UseCase`;
     title.style.filter = 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.3))';
     svg.appendChild(title);
 
@@ -1298,7 +1301,7 @@ const FlowchartSection: React.FC = () => {
               `}
             >
               <span className="mr-2">{flow.icon}</span>
-              {flow.source}
+              {flow.buttonText}
             </button>
           ))}
         </div>
