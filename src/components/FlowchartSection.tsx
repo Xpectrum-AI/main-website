@@ -337,8 +337,8 @@ const FlowchartSection: React.FC = () => {
     title.setAttribute('font-weight', 'bold');
     title.setAttribute('fill', selectedNode === 'analytics' ? analyticsFlow.color : flowData[activeFlow].color);
     title.textContent = selectedNode === 'analytics' 
-      ? `One ${flowData[activeFlow].source} Analytics UseCase`
-      : `One ${flowData[activeFlow].source} UseCase`;
+      ? `${flowData[activeFlow].source} Analytics : One UseCase`
+      : `${flowData[activeFlow].source} : One UseCase`;
     title.style.filter = 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.3))';
     svg.appendChild(title);
 
@@ -1272,11 +1272,13 @@ const FlowchartSection: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-warm-gradient">
       <Navbar />
-      <div className="flex-1 flex flex-col items-center justify-center p-4 mt-8">
-        <h1 className="text-4xl font-bold mb-12 mt-12 text-gray-800">Generative Workflow Visualization</h1>
+      <div className="flex-1 flex flex-col items-center justify-center p-4 mt-4 sm:mt-8">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 sm:mb-12 mt-6 sm:mt-12 text-gray-800 text-center px-4">
+          Generative Workflow<br className="sm:hidden" /> Visualization
+        </h1>
         
         {/* Workflow Selection Buttons */}
-        <div className="flex gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full max-w-lg sm:max-w-2xl mb-8 px-4">
           {flowData.map((flow, index) => (
             <button
               key={index}
@@ -1290,18 +1292,18 @@ const FlowchartSection: React.FC = () => {
                 transform: `scale(${activeFlow === index ? 1.05 : 1})`,
               }}
               className={`
-                px-6 py-3 rounded-lg text-lg font-semibold
+                w-full sm:w-auto px-4 sm:px-6 py-3 rounded-lg text-base sm:text-lg font-semibold
                 transition-all duration-300 transform
-                border-2
-                hover:scale-105
+                border-2 flex items-center justify-center
+                hover:scale-105 min-w-[120px]
                 ${activeFlow === index 
                   ? 'text-white shadow-lg ring-2 ring-offset-2 ring-offset-white/10'
                   : 'text-gray-300 hover:bg-gray-600'
                 }
               `}
             >
-              <span className="mr-2">{flow.icon}</span>
-              {flow.buttonText}
+              <span className="mr-2 text-xl">{flow.icon}</span>
+              <span className="whitespace-nowrap">{flow.buttonText}</span>
             </button>
           ))}
         </div>
@@ -1309,7 +1311,7 @@ const FlowchartSection: React.FC = () => {
         {/* Main Visualization Container */}
         <div 
           ref={containerRef}
-          className="w-full max-w-[2000px] h-[600px] rounded-xl p-6 overflow-hidden bg-[#1E293B]"
+          className="w-full max-w-[2000px] h-[400px] sm:h-[500px] md:h-[600px] rounded-xl p-3 sm:p-6 overflow-hidden bg-[#1E293B]"
           style={{
             background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)'
           }}

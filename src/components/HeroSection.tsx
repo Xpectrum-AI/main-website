@@ -674,21 +674,21 @@ const HomePage = () => {
 
   // Define roles for the workforce section
   const leftContent = [
-    "Sales Development Representative",
-    "Sales Data Analyst",
-    "Clinician Assistant",
+    "Sales Development Rep",
+    "Data Analytics Lead",
+    "Clinical Assistant Pro",
     "Recruiting Specialist",
-    "Sales Intelligence",
-    "AI Support Agent"
+    "Sales Intelligence AI",
+    "AI Support Expert"
   ];
 
   const rightContent = [
-    "Airlines agent",
-    "Legal Assistant",
-    "Onboarding Assistant",
-    "Agentic AI Chatbot",
-    "Contracts Analyzer",
-    "Claims Assessment"
+    "Airlines Service Rep",
+    "Legal Assistant Pro",
+    "Onboarding Expert",
+    "AI Chatbot System",
+    "Contract Analysis AI",
+    "Claims Assessment Pro"
   ];
 
   const services = [
@@ -717,20 +717,35 @@ const HomePage = () => {
   }, []);
 
   // Card component with memoization
-  const Card = useCallback(({ title, className = '' }) => (
-    <div className={`p-6 m-2 bg-white rounded-xl shadow-md border border-gray-50 transition-all duration-300 hover:shadow-lg ${className}`}>
-      <div className="flex items-center mb-4">
-        <div className="w-12 h-12 bg-xpectrum-purple/20 rounded-lg flex items-center justify-center mr-4">
-          <span className="text-xl">{getIcon(title)}</span>
+  const Card = useCallback(({ title, className = '' }) => {
+    // Split the title into main text and context if it contains spaces
+    const [mainText, ...contextWords] = title.split(' ');
+    const context = contextWords.join(' ');
+
+    return (
+      <div className={`p-4 sm:p-6 m-2 bg-white rounded-xl shadow-md border border-gray-50 transition-all duration-300 hover:shadow-lg ${className}`}>
+        <div className="flex items-start mb-3 sm:mb-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-xpectrum-purple/20 rounded-lg flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+            <span className="text-lg sm:text-xl">{getIcon(title)}</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm sm:text-lg font-semibold leading-tight sm:leading-relaxed">
+              <span className="block truncate">{mainText}</span>
+              {context && (
+                <span className="block text-xs sm:text-base font-medium text-gray-600 truncate mt-0.5">
+                  {context}
+                </span>
+              )}
+            </h3>
+          </div>
         </div>
-        <h3 className="text-lg font-semibold leading-relaxed">{title}</h3>
+        <div className="space-y-2 sm:space-y-3">
+          <div className="h-2 sm:h-2.5 bg-gray-100 rounded w-4/5"></div>
+          <div className="h-2 sm:h-2.5 bg-gray-100 rounded w-3/5"></div>
+        </div>
       </div>
-      <div className="space-y-3">
-        <div className="h-2.5 bg-gray-100 rounded w-4/5"></div>
-        <div className="h-2.5 bg-gray-100 rounded w-3/5"></div>
-      </div>
-    </div>
-  ), [getIcon]);
+    );
+  }, [getIcon]);
 
   // Animation variants with optimized transition values
   const containerVariants = {
@@ -780,12 +795,12 @@ const HomePage = () => {
 
       <motion.section
         ref={heroRef}
-        className="w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-8 font-sans mt-16 lg:mt-20 mb-24 relative apply-grid-pattern"
+        className="w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 font-sans mt-12 sm:mt-16 lg:mt-20 mb-16 sm:mb-24 relative apply-grid-pattern"
         initial={false}
       >
-        <div className="w-full max-w-7xl mx-auto mt-16 mb-10">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight text-center px-4 sm:px-6 md:px-8">
-            <div className="h-32 relative text-3xl sm:text-4xl md:text-5xl font-bold flex items-center justify-center w-full overflow-visible">
+        <div className="w-full max-w-7xl mx-auto mt-8 sm:mt-16 mb-6 sm:mb-10">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 leading-tight text-center px-2 sm:px-4 md:px-6">
+            <div className="h-24 xs:h-28 sm:h-32 relative text-lg xs:text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold flex items-center justify-center w-full overflow-visible">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={deploymentMessages[currentMessageIndex]}
@@ -793,31 +808,38 @@ const HomePage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5 }}
-                  className="flex items-center justify-center w-full gap-8 min-h-[3.5rem] py-4"
+                  className="flex items-center justify-center w-full gap-4 sm:gap-6 md:gap-8 min-h-[2.5rem] sm:min-h-[3rem] md:min-h-[3.5rem] py-2 sm:py-3 md:py-4"
                 >
-                  <span className="bg-gradient-to-r from-xpectrum-purple to-xpectrum-darkpurple bg-clip-text text-transparent whitespace-nowrap leading-normal">
-                    {displayedMessage}
+                  <span className="bg-gradient-to-r from-xpectrum-purple to-xpectrum-darkpurple bg-clip-text text-transparent leading-normal text-center max-w-[300px] xs:max-w-[400px] sm:max-w-none">
+                    <span className="sm:hidden whitespace-pre-line text-base xs:text-lg leading-tight">
+                      {displayedMessage
+                        .replace(/ with | Your | the | for | from | and /, '$&\n')
+                        .replace(/Scale |Ready |Handle /, '\n$&')}
+                    </span>
+                    <span className="hidden sm:inline whitespace-nowrap">
+                      {displayedMessage}
+                    </span>
                   </span>
                 </motion.div>
               </AnimatePresence>
             </div>
-            <span className="block mt-8 sm:mt-10">
-              Xpectrum on Cloud, On-Premises, or Hybrid
+            <span className="block mt-4 sm:mt-6 md:mt-8 text-base xs:text-lg sm:text-xl md:text-2xl lg:text-3xl leading-tight sm:leading-normal">
+              Xpectrum on Cloud,<br className="sm:hidden" /> On-Premises, or Hybrid
             </span>
-            <span className="block mt-4 sm:mt-6 text-xl sm:text-2xl md:text-3xl text-gray-600">
-              Your Choice, Our Expertise
+            <span className="block mt-2 sm:mt-4 text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 leading-tight sm:leading-normal">
+              Your Choice,<br className="sm:hidden" /> Our Expertise
             </span>
           </h1>
         </div>
 
-        <div className="max-w-7xl w-full flex justify-center">
+        <div className="max-w-7xl w-full flex justify-center px-2 sm:px-4">
           <motion.div
-            className="w-full max-w-2xl space-y-6 flex flex-col items-center"
+            className="w-full max-w-2xl space-y-4 sm:space-y-6 flex flex-col items-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <div className="h-20 sm:h-24 md:h-28 relative text-3xl sm:text-4xl md:text-5xl font-bold text-xpectrum-purple flex items-center justify-center w-full">
+            <div className="h-16 sm:h-20 md:h-24 lg:h-28 relative text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-xpectrum-purple flex items-center justify-center w-full">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={services[index].name}
@@ -825,24 +847,24 @@ const HomePage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.5 }}
-                  className="flex items-center justify-center w-full gap-6"
+                  className="flex items-center justify-center w-full gap-4 sm:gap-6"
                 >
-                  <span className="flex-shrink-0 whitespace-nowrap">{services[index].name}</span>
+                  <span className="flex-shrink-0 whitespace-nowrap text-center">{services[index].name}</span>
                   <img
                     src={services[index].icon}
                     alt={services[index].name}
-                    className="w-24 h-24 object-contain flex-shrink-0"
+                    className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-contain flex-shrink-0"
                   />
                 </motion.div>
               </AnimatePresence>
             </div>
 
-            <p className="text-gray-600 text-lg sm:text-xl max-w-xl text-center">
+            <p className="text-gray-600 text-base sm:text-lg md:text-xl max-w-xl text-center px-4">
               Transform financial services processes across every function with Agentic AI.
             </p>
 
             <motion.button
-              className="bg-xpectrum-purple text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-xpectrum-darkpurple transition duration-300 shadow-lg hover:shadow-xl"
+              className="bg-xpectrum-purple text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-semibold hover:bg-xpectrum-darkpurple transition duration-300 shadow-lg hover:shadow-xl w-full sm:w-auto"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
             >
@@ -853,48 +875,47 @@ const HomePage = () => {
 
         {/* Icons Section */}
         <motion.div
-          className="w-full py-12 mt-12"
+          className="w-full py-8 sm:py-12 mt-8 sm:mt-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.2 }}
         >
-          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-
+          <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 text-center px-4">
             <motion.div
-              className="flex flex-col items-center"
+              className="flex flex-col items-center p-4"
               whileHover={{ scale: 1.03, y: -3 }}
               transition={{ type: "spring", stiffness: 300, damping: 15 }}
             >
-              <div className="w-12 h-12 bg-xpectrum-purple text-white rounded-full flex items-center justify-center">
-                <RefreshCw size={24} />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-xpectrum-purple text-white rounded-full flex items-center justify-center">
+                <RefreshCw size={20} className="sm:w-6 sm:h-6" />
               </div>
-              <p className="text-gray-800 text-lg mt-4">
+              <p className="text-gray-800 text-base sm:text-lg mt-3 sm:mt-4">
                 One platform to automate <br /> many workflows
               </p>
             </motion.div>
 
             <motion.div
-              className="flex flex-col items-center"
+              className="flex flex-col items-center p-4"
               whileHover={{ scale: 1.03, y: -3 }}
               transition={{ type: "spring", stiffness: 300, damping: 15 }}
             >
-              <div className="w-12 h-12 bg-xpectrum-magenta text-white rounded-full flex items-center justify-center">
-                <Shield size={24} />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-xpectrum-magenta text-white rounded-full flex items-center justify-center">
+                <Shield size={20} className="sm:w-6 sm:h-6" />
               </div>
-              <p className="text-gray-800 text-lg mt-4">
+              <p className="text-gray-800 text-base sm:text-lg mt-3 sm:mt-4">
                 Compliant with leading <br /> industry standards
               </p>
             </motion.div>
 
             <motion.div
-              className="flex flex-col items-center"
+              className="flex flex-col items-center p-4 sm:col-span-2 md:col-span-1"
               whileHover={{ scale: 1.03, y: -3 }}
               transition={{ type: "spring", stiffness: 300, damping: 15 }}
             >
-              <div className="w-12 h-12 bg-xpectrum-blue text-white rounded-full flex items-center justify-center">
-                <Target size={24} />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-xpectrum-blue text-white rounded-full flex items-center justify-center">
+                <Target size={20} className="sm:w-6 sm:h-6" />
               </div>
-              <p className="text-gray-800 text-lg mt-4">
+              <p className="text-gray-800 text-base sm:text-lg mt-3 sm:mt-4">
                 Above human-level accuracy
               </p>
             </motion.div>
@@ -912,21 +933,21 @@ const HomePage = () => {
       {/* Multiply Workforce Section - Optimized Animation */}
       <div
         ref={workforceRef}
-        className="w-full py-16 px-6 md:px-12 relative z-10 apply-grid-pattern" // ADDED apply-grid-pattern and z-10 to ensure content is above grid
+        className="w-full py-12 sm:py-16 px-4 sm:px-6 md:px-12 relative z-10 apply-grid-pattern"
       >
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isWorkforceInView ? 1 : 0, y: isWorkforceInView ? 0 : 20 }}
           transition={{ duration: 0.4 }}
         >
-          <h3 className="text-xpectrum-purple font-medium tracking-wide uppercase mb-2">WHY HIRE XPECTRUM</h3>
-          <h1 className="text-4xl md:text-5xl font-bold text-black mb-4">
+          <h3 className="text-xpectrum-purple font-medium tracking-wide uppercase mb-2 text-sm sm:text-base">WHY HIRE XPECTRUM</h3>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-black mb-4">
             Multiply your workforce<br />in minutes
           </h1>
         </motion.div>
 
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 px-4">
           <motion.div
             className="w-full md:w-2/5"
             initial={{ opacity: 0, x: -30 }}
@@ -934,7 +955,7 @@ const HomePage = () => {
             transition={{ duration: 0.4, delay: 0.1 }}
           >
             <div className="flex items-center mb-4">
-              <div className="w-12 h-12 mr-4 text-xpectrum-purple">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 mr-4 text-xpectrum-purple">
                 <motion.svg
                   viewBox="0 0 100 100"
                   xmlns="http://www.w3.org/2000/svg"
@@ -965,16 +986,15 @@ const HomePage = () => {
                   />
                 </motion.svg>
               </div>
-              <h2 className="text-3xl font-bold">Solution</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold">Solution</h2>
             </div>
 
-            <p className="text-gray-700 text-lg mb-6">
-            At Xpectrum, we are building a cutting-edge Multimodal LLM Agentic System designed to go beyond traditional AI. Our platform understands deep sentiment, maintains contextual memory, and executes tasks autonomously—transforming how enterprises operate by eliminating manual dependencies and enabling intelligent automation at scale.
-
+            <p className="text-gray-700 text-base sm:text-lg mb-6">
+              At Xpectrum, we are building a cutting-edge Multimodal LLM Agentic System designed to go beyond traditional AI. Our platform understands deep sentiment, maintains contextual memory, and executes tasks autonomously—transforming how enterprises operate by eliminating manual dependencies and enabling intelligent automation at scale.
             </p>
 
             <motion.button
-              className="bg-xpectrum-darkpurple hover:bg-xpectrum-purple text-white py-3 px-8 rounded-full font-medium transition duration-300"
+              className="bg-xpectrum-darkpurple hover:bg-xpectrum-purple text-white py-2 sm:py-3 px-6 sm:px-8 rounded-full font-medium transition duration-300 w-full sm:w-auto"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
             >
@@ -983,12 +1003,12 @@ const HomePage = () => {
           </motion.div>
 
           <motion.div
-            className="w-full md:w-3/5 flex overflow-hidden h-[32rem]"
+            className="w-full md:w-3/5 flex overflow-hidden h-[20rem] sm:h-[24rem] md:h-[32rem]"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: isWorkforceInView ? 1 : 0, x: isWorkforceInView ? 0 : 30 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <div className="w-1/2 overflow-hidden relative h-full">
+            <div className="w-1/2 overflow-hidden relative h-full px-1 sm:px-2">
               <motion.div
                 ref={leftContentRef}
                 className="absolute w-full"
@@ -1005,12 +1025,12 @@ const HomePage = () => {
                 }}
               >
                 {[...leftContent, ...leftContent].map((item, index) => (
-                  <Card key={`left-${index}`} title={item} className="mb-6" />
+                  <Card key={`left-${index}`} title={item} className="mb-3 sm:mb-4" />
                 ))}
               </motion.div>
             </div>
 
-            <div className="w-1/2 overflow-hidden relative h-full">
+            <div className="w-1/2 overflow-hidden relative h-full px-1 sm:px-2">
               <motion.div
                 ref={rightContentRef}
                 className="absolute w-full"
@@ -1027,7 +1047,7 @@ const HomePage = () => {
                 }}
               >
                 {[...rightContent, ...rightContent].map((item, index) => (
-                  <Card key={`right-${index}`} title={item} className="mb-6" />
+                  <Card key={`right-${index}`} title={item} className="mb-3 sm:mb-4" />
                 ))}
               </motion.div>
             </div>
@@ -1038,20 +1058,20 @@ const HomePage = () => {
       {/* Universal AI Employee Section - Optimized Animation */}
       <div
         ref={universalRef}
-        className="flex flex-col md:flex-row items-center w-full py-16 px-6 relative z-10 apply-grid-pattern" // ADDED apply-grid-pattern and z-10
+        className="flex flex-col md:flex-row items-center w-full py-12 sm:py-16 px-4 sm:px-6 relative z-10 apply-grid-pattern"
       >
         <motion.div
-          className="w-full md:w-1/2 md:ml-24 md:pr-8"
+          className="w-full md:w-1/2 md:ml-12 lg:ml-24 md:pr-8 text-center md:text-left"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isUniversalInView ? 1 : 0, y: isUniversalInView ? 0 : 20 }}
           transition={{ duration: 0.4 }}
         >
-          <p className="text-xpectrum-purple text-2xl font-medium mb-2">Xpectrum</p>
-          <h1 className="text-5xl font-bold leading-tight mb-8">
+          <p className="text-xpectrum-purple text-xl sm:text-2xl font-medium mb-2">Xpectrum</p>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-6 sm:mb-8">
             Your Universal AI<br />Employee
           </h1>
           <motion.button
-            className="bg-xpectrum-darkpurple hover:bg-xpectrum-purple text-white px-8 py-4 rounded-full font-medium text-lg transition duration-300"
+            className="bg-xpectrum-darkpurple hover:bg-xpectrum-purple text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-medium text-base sm:text-lg transition duration-300 w-full sm:w-auto"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >
@@ -1060,12 +1080,12 @@ const HomePage = () => {
         </motion.div>
 
         <motion.div
-          className="w-full md:w-1/2 mt-10 md:mt-0 flex justify-center"
+          className="w-full md:w-1/2 mt-8 sm:mt-10 md:mt-0 flex justify-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isUniversalInView ? 1 : 0, y: isUniversalInView ? 0 : 20 }}
           transition={{ duration: 0.4, delay: 0.2 }}
         >
-          <div className="relative w-full max-w-lg aspect-square">
+          <div className="relative w-full max-w-[280px] sm:max-w-lg aspect-square">
             <motion.div
               className="absolute inset-0 bg-xpectrum-purple rounded-full flex items-center justify-center overflow-hidden"
               animate={{
@@ -1096,7 +1116,7 @@ const HomePage = () => {
                 ))}
               </motion.div>
 
-              <div className="text-white text-center px-8 text-3xl font-medium leading-tight z-10">
+              <div className="text-white text-center px-4 sm:px-8 text-xl sm:text-2xl md:text-3xl font-medium leading-tight z-10">
                 Reimagine the<br />future of work<br />with us
               </div>
             </motion.div>
@@ -1273,6 +1293,33 @@ const HomePage = () => {
         
         /* Ensure content sections with backgrounds appear above the fixed background */
         nav { z-index: 50; }
+
+        /* Extra small screen support */
+        @media (max-width: 360px) {
+          .xs\\:text-lg {
+            font-size: 1.125rem;
+          }
+          .xs\\:text-base {
+            font-size: 1rem;
+          }
+          .xs\\:max-w-\\[400px\\] {
+            max-width: 280px;
+          }
+          .xs\\:h-28 {
+            height: 5rem;
+          }
+        }
+
+        /* Better line height control for mobile */
+        .leading-tight {
+          line-height: 1.3;
+        }
+
+        .truncate {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
       `}</style>
       
       {/* Floating particles */}

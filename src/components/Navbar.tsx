@@ -129,7 +129,7 @@ const Navbar = () => {
               to="/services" 
               className={`block px-3 py-2 ${isActive('/services') ? activeLinkClass : 'text-gray-700 hover:text-xpectrum-purple'}`}
             >
-              Services
+              Products
             </Link>
             <Link 
               to="/about" 
@@ -143,18 +143,18 @@ const Navbar = () => {
             >
               Case Studies
             </Link>
-            <Link
+            {/* <Link
               to="/flowchart"
               className={`block px-3 py-2 ${isActive('/flowchart') ? activeLinkClass : 'text-gray-700 hover:text-xpectrum-purple'}`}
             >
               Flowchart
-            </Link>
-            <Link 
+            </Link> */}
+            {/* <Link 
               to="/partners" 
               className={`block px-3 py-2 ${isActive('/partners') ? activeLinkClass : 'text-gray-700 hover:text-xpectrum-purple'}`}
             >
               Partners
-            </Link>
+            </Link> */}
             <div className="mt-2 px-3 py-2">
               <a href="mailto:ask@xpectrum-ai.com" className="text-gray-700 hover:text-xpectrum-purple flex items-center gap-2">
                 <Mail size={16} />
