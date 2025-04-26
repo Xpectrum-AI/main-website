@@ -799,7 +799,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
             {isGenerating && messages.length > 0 && messages[messages.length - 1].type !== "bot" && (
               <div className="flex justify-start">
                 <div className="inline-flex items-center px-4 py-3 rounded-3xl bg-white shadow-sm space-x-2">
-                  <span className="loading-text-gradient text-sm">Generating response</span>
+                  <span className="loading-text-gradient text-sm">Please wait</span>
                   <div className="glowing-dots">
                     <span className="dot"></span>
                     <span className="dot"></span>

@@ -4,7 +4,12 @@ import { Menu, X, Mail } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 const XpectrumLogo = () => (
-  <img src="/logo.png" alt="Xpectrum AI Logo" className="h-12 w-auto" />
+  <div className="inline-flex flex-col items-center">
+    <img src="/logo.png" alt="Xpectrum AI Logo" className="h-12 w-auto" />
+    <p className="font-lexend text-base text-gray-800 text-center w-full tracking-[0.18em]">
+          Think<span className="text-violet-800 text-glow-violet">Unthinkable</span>
+    </p>
+  </div>
 );
 
 

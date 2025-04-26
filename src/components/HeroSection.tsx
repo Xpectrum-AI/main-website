@@ -1117,7 +1117,7 @@ const HomePage = () => {
               </motion.div>
 
               <div className="text-white text-center px-4 sm:px-8 text-xl sm:text-2xl md:text-3xl font-medium leading-tight z-10">
-                Reimagine the<br />future of work<br />with us
+                Think the<br /><span className="text-[#FFEF00]">Unthinkable</span><br />with us
               </div>
             </motion.div>
           </div>
