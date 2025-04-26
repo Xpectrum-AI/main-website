@@ -36,36 +36,15 @@ const API_KEYS = {
 const DOMAIN_CONFIG = {
   HRMS: {
     welcomeMessage: "Welcome to the HR Management System! How can I assist you with HR matters today?",
-    placeholderText: "Ask about leave balance, policies, payroll...",
-    suggestedQueries: [
-      "How do I apply for leave?",
-      "What's my leave balance?",
-      "How can I update my personal information?",
-      "Where can I find the employee handbook?",
-      "How do I submit a harassment complaint?"
-    ]
+    placeholderText: "Ask about leave balance, policies, payroll..."
   },
   Insurance: {
     welcomeMessage: "Welcome to Insurance Management! I can help you with policies, claims, and coverage inquiries.",
-    placeholderText: "Ask about policies, claims, coverage...",
-    suggestedQueries: [
-      "How do I file an insurance claim?",
-      "What's my policy coverage?",
-      "How do I add dependents to my policy?",
-      "Can you explain my deductibles?",
-      "How do I check my claim status?"
-    ]
+    placeholderText: "Ask about policies, claims, coverage..."
   },
   Hospitality: {
     welcomeMessage: "Welcome to Hospitality Services! How can I assist you with your hospitality needs today?",
-    placeholderText: "Ask about bookings, amenities, services...",
-    suggestedQueries: [
-      "How do I make a reservation?",
-      "What amenities are available?",
-      "Can I request early check-in?",
-      "What dining options do you offer?",
-      "How do I arrange airport transfer?"
-    ]
+    placeholderText: "Ask about bookings, amenities, services..."
   }
 };
 
@@ -135,7 +114,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [isClosing, setIsClosing] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [showSuggestions, setShowSuggestions] = useState<boolean>(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -147,18 +125,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const linkInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
-
-  // Update messages when domain changes
-  useEffect(() => {
-    const config = getDomainConfig(domain as keyof typeof DOMAIN_CONFIG);
-    setMessages([
-      {
-        type: "bot",
-        content: config.welcomeMessage
-      }
-    ]);
-    setShowSuggestions(true);
-  }, [domain]);
 
   // Auto-adjust textarea height
   useEffect(() => {
@@ -509,22 +475,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     }
   };
 
-  // Use a suggested query
-  const handleSuggestionClick = (suggestion: string) => {
-    setQuery(suggestion);
-    // Auto-send the suggested query
-    setTimeout(() => {
-      sendMessage(suggestion);
-    }, 100);
-    setShowSuggestions(false);
-  };
-
   const sendMessage = async (forcedQuery?: string) => {
     const messageText = forcedQuery || query;
     if ((!messageText.trim() && attachedFiles.length === 0) || isLoading) return;
 
     setSearchQuery(messageText || "Analyzing attachments...");
-    setShowSuggestions(false);
 
     // Structure the payload for the chat API
     const payload = {
@@ -669,24 +624,17 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   };
 
   const handleReset = () => {
-    // Reset messages to initial state with correct domain config
     setMessages([
       {
         type: "bot" as const,
         content: domainConfig.welcomeMessage
       }
     ]);
-    // Clear the input field
     setQuery("");
-    // Reset conversation ID
     setConversationId("");
-    // Close the dropdown
     setShowAttachmentOptions(false);
-    // Reset status indicators
     setSearchQuery(null);
     setIsGenerating(false);
-    // Show suggestions again
-    setShowSuggestions(true);
   };
 
   // Handle textarea key presses
@@ -854,21 +802,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                 </div>
               </div>
             ))}
-
-            {/* Suggested Queries */}
-            {showSuggestions && domainConfig.suggestedQueries && (
-              <div className="flex flex-wrap gap-2 mt-4">
-                {domainConfig.suggestedQueries.map((suggestion, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    className={`px-3 py-1.5 rounded-full text-sm ${theme.secondary} ${theme.accent} ${theme.hover} transition-colors`}
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
-            )}
 
             <div ref={messagesEndRef} />
           </div>

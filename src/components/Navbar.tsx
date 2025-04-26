@@ -106,10 +106,15 @@ const Navbar = () => {
           <div className="md:hidden">
             <button
               type="button"
-              className="text-gray-700 hover:text-xpectrum-purple focus:outline-none transition-all duration-300"
+              className="text-gray-700 hover:text-xpectrum-purple focus:outline-none transition-all duration-300 p-2 rounded-lg bg-white/80 backdrop-blur-sm"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X size={24} className="animate-fade-in-permanent" /> : <Menu size={24} className="animate-fade-in-permanent" />}
+              <span className="sr-only">Toggle menu</span>
+              {mobileMenuOpen ? (
+                <X size={24} className="transform transition-transform duration-200" />
+              ) : (
+                <Menu size={24} className="transform transition-transform duration-200" />
+              )}
             </button>
           </div>
         </div>
@@ -117,8 +122,8 @@ const Navbar = () => {
       
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white animate-slide-down">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex flex-col">
+        <div className="md:hidden bg-white/95 backdrop-blur-sm shadow-lg animate-slide-down border-t border-gray-100">
+          <div className="px-4 pt-2 pb-3 space-y-2 sm:px-3 flex flex-col">
             <Link 
               to="/"
               className={`block px-3 py-2 ${isActive('/') ? activeLinkClass : 'text-gray-700 hover:text-xpectrum-purple'}`}

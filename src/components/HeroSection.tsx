@@ -823,10 +823,10 @@ const HomePage = () => {
                 </motion.div>
               </AnimatePresence>
             </div>
-            <span className="block mt-4 sm:mt-6 md:mt-8 text-base xs:text-lg sm:text-xl md:text-2xl lg:text-3xl leading-tight sm:leading-normal">
+            <span className="block mt-4 sm:mt-6 md:mt-8 text-base xs:text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-tight sm:leading-normal">
               Xpectrum on Cloud,<br className="sm:hidden" /> On-Premises, or Hybrid
             </span>
-            <span className="block mt-2 sm:mt-4 text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 leading-tight sm:leading-normal">
+            <span className="block mt-2 sm:mt-4 text-sm xs:text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-gray-600 leading-tight sm:leading-normal">
               Your Choice,<br className="sm:hidden" /> Our Expertise
             </span>
           </h1>
