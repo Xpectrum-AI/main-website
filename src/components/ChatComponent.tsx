@@ -140,10 +140,12 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setIsOpen(true);
   }, []); // Empty dependency array means this runs only once on mount
 
-  // Auto-scroll to bottom when messages change
+  // Auto-scroll to bottom when messages change or when generating
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, isGenerating]); // Add isGenerating to dependencies
 
   // Modify the useEffect for click outside handling
   useEffect(() => {
@@ -480,6 +482,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     if ((!messageText.trim() && attachedFiles.length === 0) || isLoading) return;
 
     setSearchQuery(messageText || "Analyzing attachments...");
+    setIsGenerating(true);
 
     // Structure the payload for the chat API
     const payload = {
@@ -490,14 +493,12 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       user: "abc-123",
       files: attachedFiles.map(file => {
         if (file.url) {
-          // For remote URLs
           return {
             type: "image",
             transfer_method: "remote_url",
             url: file.url
           };
         } else {
-          // For uploaded files
           return {
             type: "image",
             transfer_method: "local_file",
@@ -527,7 +528,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     try {
       setTimeout(() => {
         setSearchQuery(null);
-        setIsGenerating(true);
       }, 1000);
 
       const response = await fetch(`${BASE_URL}/chat-messages`, {
@@ -546,7 +546,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         console.error("Chat API error details:", errorText);
         console.error("Full error response:", response);
         
-        // Try to parse the error as JSON if possible
         try {
           const errorJson = JSON.parse(errorText);
           console.error("Parsed error JSON:", errorJson);
@@ -566,9 +565,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         botMessageIndex = prev.length;
         return [...prev, { type: "bot", content: "" }];
       });
+      setIsGenerating(false); // Turn off the loading indicator once we start receiving the stream
 
       if (reader) {
-        setIsGenerating(false); // Hide generating indicator when we start receiving content
         let fullAnswer = "";
         
         while (true) {
@@ -774,13 +773,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                         <ReactMarkdown>
                           {msg.content}
                         </ReactMarkdown>
-                        {msg.content === "" && isGenerating && (
-                          <div className="flex space-x-1 mt-2 items-center">
-                            <div className="w-1 h-1 bg-gray-500 rounded-full animate-bounce"></div>
-                            <div className="w-1 h-1 bg-gray-500 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                            <div className="w-1 h-1 bg-gray-500 rounded-full animate-bounce [animation-delay:0.4s]"></div>
-                          </div>
-                        )}
                       </div>
                     ) : (
                       <>
@@ -802,6 +794,20 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                 </div>
               </div>
             ))}
+
+            {/* Loading indicator */}
+            {isGenerating && messages.length > 0 && messages[messages.length - 1].type !== "bot" && (
+              <div className="flex justify-start">
+                <div className="inline-flex items-center px-4 py-3 rounded-3xl bg-white shadow-sm space-x-2">
+                  <span className="loading-text-gradient text-sm">Generating response</span>
+                  <div className="glowing-dots">
+                    <span className="dot"></span>
+                    <span className="dot"></span>
+                    <span className="dot"></span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div ref={messagesEndRef} />
           </div>
@@ -1028,6 +1034,53 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
             @keyframes dotFade {
               0%, 100% { opacity: 0.4; }
               50% { opacity: 1; }
+            }
+
+            /* Glowing Dots Loading Indicator */
+            .glowing-dots {
+              display: flex;
+              gap: 4px;
+            }
+            .glowing-dots .dot {
+              width: 8px;
+              height: 8px;
+              background-color: #8B5CF6; /* xpectrum-purple */
+              border-radius: 50%;
+              animation: glow-dot-animation 1.4s infinite ease-in-out both;
+            }
+            .glowing-dots .dot:nth-child(1) { animation-delay: -0.32s; }
+            .glowing-dots .dot:nth-child(2) { animation-delay: -0.16s; }
+            .glowing-dots .dot:nth-child(3) { animation-delay: 0s; }
+
+            @keyframes glow-dot-animation {
+              0%, 80%, 100% { 
+                transform: scale(0.8);
+                opacity: 0.5;
+                box-shadow: 0 0 3px #8B5CF6;
+              } 
+              40% { 
+                transform: scale(1.0); 
+                opacity: 1;
+                box-shadow: 0 0 8px 2px #8B5CF6;
+              } 
+            }
+
+            /* Gradient Text */
+            .loading-text-gradient {
+              font-weight: 500; /* Medium weight */
+              background: linear-gradient(90deg, #8B5CF6, #D946EF, #0EA5E9);
+              -webkit-background-clip: text;
+              background-clip: text;
+              color: transparent;
+              /* Add a subtle animation for the gradient */
+              animation: gradient-flow 3s ease-in-out infinite;
+              background-size: 200% 100%; /* Make background wider for flow effect */
+            }
+
+            @keyframes gradient-flow {
+              0% { background-position: 0% 50%; }
+              50% { background-position: 100% 50%; }
+              100% { background-position: 0% 50%; }
             }
           `}</style>
         </div>
