@@ -1516,12 +1516,26 @@ const HomePage = () => {
       </div>
 
       
-      {/* Chat Modal Overlay and ChatComponent */}
+      {/* Floating X Chat Launcher */}
       {!isChatOpen && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center">
-          <div onClick={e => e.stopPropagation()}>
-            <ChatComponentXpectrumDemo />
-          </div>
+        <button
+          onClick={() => setIsChatOpen(true)}
+          className="fixed bottom-16 right-16 z-50 bg-gradient-to-br from-greenish to-greenish-light text-white rounded-full p-4 shadow-xl border-2 border-white/50 flex items-center justify-center"
+          style={{ transition: 'all 0.3s', animationDuration: '3s' }}
+          aria-label="Open Chat"
+        >
+          <img
+            src="/xpectrumLogo.png"
+            alt="Xpectrum Logo"
+            className="h-10 w-10 sm:h-10 sm:w-10"
+          />
+        </button>
+      )}
+
+      {/* Chat Popup Only When Open */}
+      {isChatOpen && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <ChatComponentXpectrumDemo />
         </div>
       )}
     </div>
