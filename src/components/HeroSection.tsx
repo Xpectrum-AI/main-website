@@ -818,8 +818,9 @@ const HomePage = () => {
                   <Bot size={20} className="text-[#1a763a]" />
                 </motion.div>
                 <div className="flex-1">
-                  <span className="text-sm xs:text-base text-gray-800 font-medium block">End-to-end Agentic AI chatbot</span>
-                  <span className="text-xs xs:text-sm text-gray-600 block mt-0.5">with voice and video avatar experience</span>
+                  <span className="text-sm xs:text-base text-gray-800 block">
+                    End-to-end <span className="font-bold">Agentic AI chatbot</span> with <span className="font-bold">voice and video avatar</span> experience
+                  </span>
                 </div>
               </motion.li>
               <motion.li 
@@ -835,8 +836,9 @@ const HomePage = () => {
                   <Users size={20} className="text-[#1a763a]" />
                 </motion.div>
                 <div className="flex-1">
-                  <span className="text-sm xs:text-base text-gray-800 font-medium block">FaceTime-style interaction</span>
-                  <span className="text-xs xs:text-sm text-gray-600 block mt-0.5">powered by an Agentic AI chatbot</span>
+                  <span className="text-sm xs:text-base text-gray-800 block">
+                    <span className="font-bold">FaceTime-style</span> real-time interaction powered by an <span className="font-bold">Agentic AI chatbot</span>
+                  </span>
                 </div>
               </motion.li>
               <motion.li 
@@ -852,8 +854,9 @@ const HomePage = () => {
                   <Shield size={20} className="text-[#1a763a]" />
                 </motion.div>
                 <div className="flex-1">
-                  <span className="text-sm xs:text-base text-gray-800 font-medium block">Customer-as-a-Service (CaaS)</span>
-                  <span className="text-xs xs:text-sm text-gray-600 block mt-0.5">seamless integration of voice, video, and AI</span>
+                  <span className="text-sm xs:text-base text-gray-800 block">
+                    <span className="font-bold">Customer-as-a-Service (CaaS)</span> platform with seamless <span className="font-bold">integration of voice, video, and AI intelligence</span>
+                  </span>
                 </div>
               </motion.li>
             </ul>
@@ -1165,8 +1168,11 @@ const HomePage = () => {
               </div>
 
               <p className="text-gray-700 text-base sm:text-lg mb-6">
-                At Xpectrum, we are building a cutting-edge Multimodal LLM Agentic System designed to go beyond traditional AI. Our platform understands deep sentiment, maintains contextual memory, and executes tasks autonomously—transforming how enterprises operate by eliminating manual dependencies and enabling intelligent automation at scale.
-              </p>
+              At Xpectrum, we’re building universal agentic AI bots that act as true digital employees—capable of reasoning, decision-making, and executing tasks across various domains. These agents don’t just answer queries; they autonomously plan, coordinate, and complete end-to-end workflows like skilled human representatives.<br></br>
+
+Powered by swarm-based orchestration and intelligent fail-safes, they handle complex, multi-intent scenarios with ease. When needed, they escalate issues to human agents via our integrated Customer Care-as-a-Service (CCaaS) layer—ensuring reliability, task completion, and zero tolerance for hallucinations.
+
+</p>
 
               <motion.button
                 className="bg-[#1a763a] hover:bg-[#4CAF50] text-white py-2 sm:py-3 px-6 sm:px-8 rounded-full font-medium transition duration-300 w-full sm:w-auto"
