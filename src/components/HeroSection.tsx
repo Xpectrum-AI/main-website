@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Bot, Building, Users, Computer, Lightbulb, Shield, Target, RefreshCw, FileText, ShieldCheck, Briefcase, BedDouble } from 'lucide-react';
+import { motion, useScroll, useTransform, useInView, AnimatePresence, useAnimation } from 'framer-motion';
+import { ArrowRight, Bot, Building, Users, Computer, Lightbulb, Shield, Target, RefreshCw, FileText, ShieldCheck, Briefcase, BedDouble, Check, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import FlowchartSection from './FlowchartSection';
+import { cn } from '@/lib/utils';
+import ChatComponentXpectrumDemo from './ChatComponentXpectrumDemo';
 
 // Company logos for carousel - ensure these paths are correct
 const companyLogos = [
@@ -21,7 +23,7 @@ const companyLogos = [
 
 // Deployment messages for the typing animation
 const deploymentMessages = [
-  "Seamless Deployment:",
+  "Seamless Deployment.",
   "Deploy on Cloud.",
   "Run On-Premises.",
   "Go Hybrid with Confidence.",
@@ -53,7 +55,7 @@ const serviceWorkflows = [
   {
     name: "HRMS",
     icon: Briefcase,
-    color: "#7b68ee", // Main Xpectrum purple
+    color: "#1a763a", // Changed from purple to green
     roles: [
       { title: "Recruiting Specialist", icon: Users },
       { title: "Onboarding Assistant", icon: FileText },
@@ -77,7 +79,7 @@ const serviceWorkflows = [
   {
     name: "Insurance",
     icon: ShieldCheck,
-    color: "#6366f1", // Indigo color
+    color: "#4CAF50", // Changed from indigo to green
     roles: [
       { title: "Claims Adjuster", icon: FileText }, 
       { title: "Underwriting Asst.", icon: Computer }, 
@@ -101,7 +103,7 @@ const serviceWorkflows = [
   {
     name: "Hospitality",
     icon: BedDouble,
-    color: "#ec4899", // Pink color
+    color: "#155e2e", // Changed from pink to dark green
     roles: [
       { title: "Booking Agent", icon: Computer },
       { title: "Guest Concierge", icon: Users },
@@ -535,13 +537,6 @@ const HomePage = () => {
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [displayedMessage, setDisplayedMessage] = useState(deploymentMessages[0]);
 
-  // Mouse position state for background effect
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  // Add smooth mouse position state with spring physics
-  const [smoothMousePosition, setSmoothMousePosition] = useState({ x: 0, y: 0 });
-  // Add animation frame reference
-  const animationFrameRef = useRef<number | null>(null);
-
   // InView hooks for scroll animations - with reduced sensitivity
   const isHeroInView = useInView(heroRef, { once: false, amount: 0.2 });
   const isAccurateInView = useInView(accurateRef, { once: true, amount: 0.2 });
@@ -577,54 +572,6 @@ const HomePage = () => {
       setRightHeight(rightContentRef.current.scrollHeight / 2);
     }
   }, []);
-
-  // Mouse move handler with spring physics
-  useEffect(() => {
-    // Spring settings
-    const springStrength = 0.1; // Lower = smoother but slower
-    const dampening = 0.8; // Higher = less oscillation
-    
-    let currentVelocity = { x: 0, y: 0 };
-    
-    const handleMouseMove = (event: MouseEvent) => {
-      setMousePosition({ x: event.clientX, y: event.clientY });
-    };
-
-    const animateMousePosition = () => {
-      // Spring physics calculation
-      const dx = mousePosition.x - smoothMousePosition.x;
-      const dy = mousePosition.y - smoothMousePosition.y;
-      
-      // Apply spring force
-      currentVelocity.x = currentVelocity.x * dampening + dx * springStrength;
-      currentVelocity.y = currentVelocity.y * dampening + dy * springStrength;
-      
-      // Update position
-      setSmoothMousePosition(prev => ({
-        x: prev.x + currentVelocity.x,
-        y: prev.y + currentVelocity.y
-      }));
-      
-      // Continue animation loop
-      animationFrameRef.current = requestAnimationFrame(animateMousePosition);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    animationFrameRef.current = requestAnimationFrame(animateMousePosition);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [mousePosition, smoothMousePosition]);
-
-  // Calculate background style based on mouse position - now using smoothMousePosition
-  const backgroundStyle = {
-    '--mouse-x': `${smoothMousePosition.x}px`,
-    '--mouse-y': `${smoothMousePosition.y}px`,
-  } as any; // Cast to any to allow CSS custom properties
 
   useEffect(() => {
     // Scroll to top only on initial load
@@ -779,10 +726,41 @@ const HomePage = () => {
     return () => clearInterval(interval);
   }, [services.length]);
 
+  const [showInfoContainer, setShowInfoContainer] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // Animation controls for scroll-reveal
+  const sectionControls = useAnimation();
+  const sectionRef = useRef(null);
+  const sectionInView = useInView(sectionRef, { once: true, amount: 0.2 });
+  useEffect(() => {
+    if (sectionInView) sectionControls.start('visible');
+  }, [sectionInView, sectionControls]);
+
+  // Shimmer effect for CTA button
+  const Shimmer = () => (
+    <motion.div
+      className="absolute inset-0 rounded-xl pointer-events-none overflow-hidden"
+      initial={{ x: '-100%' }}
+      animate={{ x: ['-100%', '100%'] }}
+      transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+      style={{ background: 'linear-gradient(120deg, transparent 60%, rgba(255,255,255,0.4) 80%, transparent 100%)' }}
+    />
+  );
+
+  const heroVariants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: (i = 0) => ({
+      opacity: 1,
+      y: 0,
+      transition: { delay: i * 0.15, duration: 0.7, ease: 'easeOut' }
+    })
+  };
+
   return (
     <div
       className="min-h-screen overflow-x-hidden relative background-gradient-container"
-      style={backgroundStyle}
     >
       {/* Animated Gradient Background - REMOVED Fixed container */}
       {/* <div
@@ -792,54 +770,222 @@ const HomePage = () => {
 
       <Navbar />
       
+      {/* Floating Info Container */}
+      <AnimatePresence>
+        {showInfoContainer && (
+          <motion.div 
+            className="fixed top-20 sm:top-24 md:top-28 right-4 sm:right-4 md:right-4 z-40 bg-white rounded-xl shadow-lg border border-gray-100 p-4 xs:p-5 sm:p-6 w-[90vw] xs:w-80 sm:w-96 md:w-[340px] max-w-[340px]"
+            initial={{ opacity: 0, y: -20, x: 20 }}
+            animate={{ 
+              opacity: 1, 
+              x: 0,
+              y: [0, -8, 0],
+              transition: {
+                y: {
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  duration: 3,
+                  ease: "easeInOut"
+                }
+              }
+            }}
+            exit={{ 
+              opacity: 0, 
+              scale: 0.9,
+              y: -20,
+              transition: { duration: 0.3 }
+            }}
+            whileHover={{ 
+              scale: 1.05, 
+              boxShadow: "0 10px 25px rgba(26, 118, 58, 0.2)",
+              backgroundColor: "#f0fdf4",
+              borderColor: "#1a763a"
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            <h3 className="font-bold text-lg xs:text-xl text-[#1a763a] mb-3 sm:mb-4">In Progress:</h3>
+            <ul className="space-y-3 xs:space-y-4">
+              <motion.li 
+                className="flex items-start"
+                whileHover={{ x: 5, color: "#1a763a" }}
+                transition={{ duration: 0.2 }}
+              >
+                <motion.div
+                  className="w-10 h-10 bg-[#e6f4ea] rounded-lg flex items-center justify-center mr-3 flex-shrink-0"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Bot size={20} className="text-[#1a763a]" />
+                </motion.div>
+                <div className="flex-1">
+                  <span className="text-sm xs:text-base text-gray-800 font-medium block">End-to-end Agentic AI chatbot</span>
+                  <span className="text-xs xs:text-sm text-gray-600 block mt-0.5">with voice and video avatar experience</span>
+                </div>
+              </motion.li>
+              <motion.li 
+                className="flex items-start"
+                whileHover={{ x: 5, color: "#1a763a" }}
+                transition={{ duration: 0.2 }}
+              >
+                <motion.div
+                  className="w-10 h-10 bg-[#e6f4ea] rounded-lg flex items-center justify-center mr-3 flex-shrink-0"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Users size={20} className="text-[#1a763a]" />
+                </motion.div>
+                <div className="flex-1">
+                  <span className="text-sm xs:text-base text-gray-800 font-medium block">FaceTime-style interaction</span>
+                  <span className="text-xs xs:text-sm text-gray-600 block mt-0.5">powered by an Agentic AI chatbot</span>
+                </div>
+              </motion.li>
+              <motion.li 
+                className="flex items-start"
+                whileHover={{ x: 5, color: "#1a763a" }}
+                transition={{ duration: 0.2 }}
+              >
+                <motion.div
+                  className="w-10 h-10 bg-[#e6f4ea] rounded-lg flex items-center justify-center mr-3 flex-shrink-0"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Shield size={20} className="text-[#1a763a]" />
+                </motion.div>
+                <div className="flex-1">
+                  <span className="text-sm xs:text-base text-gray-800 font-medium block">Customer-as-a-Service (CaaS)</span>
+                  <span className="text-xs xs:text-sm text-gray-600 block mt-0.5">seamless integration of voice, video, and AI</span>
+                </div>
+              </motion.li>
+            </ul>
+            
+            {/* Close button for all screens */}
+            <button 
+              className="absolute top-3 right-3 text-[#1a763a] bg-white rounded-full shadow hover:bg-[#e6f4ea] z-50 p-1"
+              aria-label="Close Info Container"
+              onClick={() => setShowInfoContainer(false)}
+            >
+              <X size={28} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <motion.section
         ref={heroRef}
-        className="w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 font-sans mt-12 sm:mt-16 lg:mt-20 mb-16 sm:mb-24 relative apply-grid-pattern"
-        initial={false}
+        className="w-full min-h-screen flex flex-col items-start justify-center px-4 sm:px-6 md:px-8 font-sans mt-12 sm:mt-16 lg:mt-20 mb-16 sm:mb-24 relative apply-grid-pattern"
+        initial="hidden"
+        animate="visible"
+        variants={heroVariants}
       >
-        <div className="w-full max-w-7xl mx-auto mt-8 sm:mt-16 mb-6 sm:mb-10">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 leading-tight text-center px-2 sm:px-4 md:px-6">
-            <div className="h-24 xs:h-28 sm:h-32 relative text-lg xs:text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold flex items-center justify-center w-full overflow-visible">
-              <AnimatePresence mode="wait">
+        <div className="w-full max-w-5xl ml-40 mt-8 sm:mt-16 sm:mb-10 flex flex-col items-start">
+          <div className="flex items-start justify-between w-full">
+            <div className="relative">
+              {/* Animated gradient headline */}
+              <motion.h1
+                className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-gray-900 leading-tight text-left px-2 sm:px-4 md:px-6 relative"
+                initial="hidden"
+                animate="visible"
+                variants={heroVariants}
+                custom={0}
+              >
+                <div className="absolute -inset-4 sm:-inset-6 md:-inset-8 bg-white/80 rounded-2xl shadow-xl -z-10 border border-xpectrum-purple/10" />
                 <motion.div
-                  key={deploymentMessages[currentMessageIndex]}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5 }}
-                  className="flex items-center justify-center w-full gap-4 sm:gap-6 md:gap-8 min-h-[2.5rem] sm:min-h-[3rem] md:min-h-[3.5rem] py-2 sm:py-3 md:py-4"
+                  className="h-12 xs:h-16 sm:h-20 relative text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold flex items-center justify-start w-full overflow-visible"
+                  initial="hidden"
+                  animate="visible"
+                  variants={heroVariants}
+                  custom={1}
                 >
-                  <span className="bg-gradient-to-r from-xpectrum-purple to-xpectrum-darkpurple bg-clip-text text-transparent leading-normal text-center max-w-[300px] xs:max-w-[400px] sm:max-w-none">
-                    <span className="sm:hidden whitespace-pre-line text-base xs:text-lg leading-tight">
-                      {displayedMessage
-                        .replace(/ with | Your | the | for | from | and /, '$&\n')
-                        .replace(/Scale |Ready |Handle /, '\n$&')}
-                    </span>
-                    <span className="hidden sm:inline whitespace-nowrap">
-                      {displayedMessage}
-                    </span>
-                  </span>
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={deploymentMessages[currentMessageIndex]}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.5 }}
+                      className="flex items-center justify-start w-full gap-2 sm:gap-4 md:gap-6 min-h-[1.5rem] sm:min-h-[2rem] md:min-h-[2.5rem] py-1 sm:py-2 md:py-3"
+                    >
+                      <span className="bg-gradient-to-r from-[#1a763a] to-[#4CAF50] bg-clip-text text-transparent leading-normal text-left max-w-[300px] xs:max-w-[400px] sm:max-w-none animate-gradient-move">
+                        <span className="sm:hidden whitespace-pre-line text-base xs:text-lg leading-tight">
+                          {displayedMessage
+                            .replace(/ with | Your | the | for | from | and /, '$&\n')
+                            .replace(/Scale |Ready |Handle /, '\n$&')}
+                        </span>
+                        <span className="hidden sm:inline whitespace-nowrap">
+                          {displayedMessage}
+                        </span>
+                      </span>
+                    </motion.div>
+                  </AnimatePresence>
                 </motion.div>
-              </AnimatePresence>
+                <motion.span
+                  className="block mt-1 sm:mt-2 text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-tight sm:leading-normal text-dark text-left font-extrabold drop-shadow"
+                  initial="hidden"
+                  animate="visible"
+                  variants={heroVariants}
+                  custom={2}
+                >
+                  Xpectrum on Cloud,<br className="sm:hidden" /> On-Premises, or Hybrid
+                </motion.span>
+                <motion.span
+                  className="block mt-0.5 sm:mt-1 text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-gray-600 leading-tight sm:leading-normal text-left font-bold drop-shadow-sm"
+                  initial="hidden"
+                  animate="visible"
+                  variants={heroVariants}
+                  custom={3}
+                >
+                  Your Choice,<br className="sm:hidden" /> Our Expertise
+                </motion.span>
+              </motion.h1>
             </div>
-            <span className="block mt-4 sm:mt-6 md:mt-8 text-base xs:text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-tight sm:leading-normal">
-              Xpectrum on Cloud,<br className="sm:hidden" /> On-Premises, or Hybrid
-            </span>
-            <span className="block mt-2 sm:mt-4 text-sm xs:text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-gray-600 leading-tight sm:leading-normal">
-              Your Choice,<br className="sm:hidden" /> Our Expertise
-            </span>
-          </h1>
+            {/* Animated Bot Icon */}
+            <motion.div 
+              className={cn(
+                "cursor-pointer transition-all duration-300 hidden sm:block mr-20 mt-40 relative",
+                isHovered && "scale-110"
+              )}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              animate={{
+                y: [0, -16, 0],
+                rotate: [0, 3, 0, -3, 0],
+                scale: [1, 1.08, 1]
+              }}
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              <motion.div
+                initial={{ scale: 1 }}
+                animate={{ scale: isHovered ? 1.12 : 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Bot 
+                  size={140} 
+                  className="text-[#1a763a] hover:text-[#4CAF50] filter drop-shadow-2xl"
+                />
+              </motion.div>
+              {/* Enhanced glow effect */}
+              <div 
+                className="absolute inset-0 bg-[#1a763a] opacity-30 blur-3xl rounded-full -z-10 scale-150"
+                style={{
+                  animation: "glow 3s ease-in-out infinite alternate"
+                }}
+              />
+            </motion.div>
+          </div>
         </div>
-
-        <div className="max-w-7xl w-full flex justify-center px-2 sm:px-4">
+        <div className="max-w-5xl ml-40 w-full flex flex-col items-start px-2 sm:px-4">
           <motion.div
-            className="w-full max-w-2xl space-y-4 sm:space-y-6 flex flex-col items-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+            className="w-full max-w-xl space-y-4 sm:space-y-6 flex flex-col items-start relative"
+            initial="hidden"
+            animate="visible"
+            variants={heroVariants}
+            custom={4}
           >
-            <div className="h-16 sm:h-20 md:h-24 lg:h-28 relative text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-xpectrum-purple flex items-center justify-center w-full">
+            <div className="h-10 sm:h-12 md:h-16 lg:h-20 relative text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#1a763a] flex items-center justify-start w-full">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={services[index].name}
@@ -847,32 +993,34 @@ const HomePage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.5 }}
-                  className="flex items-center justify-center w-full gap-4 sm:gap-6"
+                  className="flex items-center justify-start w-full gap-2 sm:gap-4"
                 >
-                  <span className="flex-shrink-0 whitespace-nowrap text-center">{services[index].name}</span>
+                  <span className="flex-shrink-0 whitespace-nowrap text-left">{services[index].name}</span>
                   <img
                     src={services[index].icon}
                     alt={services[index].name}
-                    className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-contain flex-shrink-0"
+                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain flex-shrink-0"
                   />
                 </motion.div>
               </AnimatePresence>
             </div>
-
-            <p className="text-gray-600 text-base sm:text-lg md:text-xl max-w-xl text-center px-4">
+            <p className="text-gray-600 text-sm sm:text-base md:text-lg text-left px-0 mt-0.5 whitespace-nowrap mb-24">
               Transform financial services processes across every function with Agentic AI.
             </p>
-
             <motion.button
-              className="bg-xpectrum-purple text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-semibold hover:bg-xpectrum-darkpurple transition duration-300 shadow-lg hover:shadow-xl w-full sm:w-auto"
-              whileHover={{ scale: 1.03 }}
+              className="bg-gradient-to-r from-[#1a763a] to-[#4CAF50] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-bold shadow-xl hover:from-[#4CAF50] hover:to-[#1a763a] transition duration-300 w-full sm:w-auto text-left flex items-center gap-2 overflow-hidden relative"
+              whileHover={{ scale: 1.08, boxShadow: "0 8px 32px rgba(26, 118, 58, 0.18)" }}
               whileTap={{ scale: 0.97 }}
+              initial="hidden"
+              animate="visible"
+              variants={heroVariants}
+              custom={5}
             >
-              Hire Xpectrum
+              <Bot size={20} className="text-white" /> Hire Xpectrum
+              <Shimmer />
             </motion.button>
           </motion.div>
         </div>
-
         {/* Icons Section */}
         <motion.div
           className="w-full py-8 sm:py-12 mt-8 sm:mt-12"
@@ -881,41 +1029,62 @@ const HomePage = () => {
           transition={{ duration: 0.4, delay: 0.2 }}
         >
           <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 text-center px-4">
+            {/* Feature Card 1 */}
             <motion.div
-              className="flex flex-col items-center p-4"
-              whileHover={{ scale: 1.03, y: -3 }}
-              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              className="group bg-white rounded-2xl shadow-md p-8 flex flex-col items-center transition-all duration-300 hover:shadow-xl hover:bg-green-50 cursor-pointer border border-gray-100"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
             >
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-xpectrum-purple text-white rounded-full flex items-center justify-center">
-                <RefreshCw size={20} className="sm:w-6 sm:h-6" />
-              </div>
-              <p className="text-gray-800 text-base sm:text-lg mt-3 sm:mt-4">
-                One platform to automate <br /> many workflows
+              <motion.div
+                className="w-16 h-16 flex items-center justify-center rounded-full mb-4 bg-[#1a763a] group-hover:bg-[#4CAF50] transition-colors duration-300"
+                whileHover={{ rotate: 20 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+              >
+                <RefreshCw size={32} className="text-white" />
+              </motion.div>
+              <p className="text-gray-900 text-lg font-medium mt-2">
+                One platform to automate<br />many workflows
               </p>
             </motion.div>
 
+            {/* Feature Card 2 */}
             <motion.div
-              className="flex flex-col items-center p-4"
-              whileHover={{ scale: 1.03, y: -3 }}
-              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              className="group bg-white rounded-2xl shadow-md p-8 flex flex-col items-center transition-all duration-300 hover:shadow-xl hover:bg-green-50 cursor-pointer border border-gray-100"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-xpectrum-magenta text-white rounded-full flex items-center justify-center">
-                <Shield size={20} className="sm:w-6 sm:h-6" />
-              </div>
-              <p className="text-gray-800 text-base sm:text-lg mt-3 sm:mt-4">
-                Compliant with leading <br /> industry standards
+              <motion.div
+                className="w-16 h-16 flex items-center justify-center rounded-full mb-4 bg-[#4CAF50] group-hover:bg-[#1a763a] transition-colors duration-300"
+                whileHover={{ scale: 1.15 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+              >
+                <Shield size={32} className="text-white" />
+              </motion.div>
+              <p className="text-gray-900 text-lg font-medium mt-2">
+                Compliant with leading<br />industry standards
               </p>
             </motion.div>
 
+            {/* Feature Card 3 */}
             <motion.div
-              className="flex flex-col items-center p-4 sm:col-span-2 md:col-span-1"
-              whileHover={{ scale: 1.03, y: -3 }}
-              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              className="group bg-white rounded-2xl shadow-md p-8 flex flex-col items-center transition-all duration-300 hover:shadow-xl hover:bg-green-50 cursor-pointer border border-gray-100"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.6, delay: 0.45 }}
             >
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-xpectrum-blue text-white rounded-full flex items-center justify-center">
-                <Target size={20} className="sm:w-6 sm:h-6" />
-              </div>
-              <p className="text-gray-800 text-base sm:text-lg mt-3 sm:mt-4">
+              <motion.div
+                className="w-16 h-16 flex items-center justify-center rounded-full mb-4 bg-[#cce3d4] group-hover:bg-[#4CAF50] transition-colors duration-300"
+                whileHover={{ rotate: -20 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+              >
+                <Target size={32} className="text-[#1a763a] group-hover:text-white transition-colors duration-300" />
+              </motion.div>
+              <p className="text-gray-900 text-lg font-medium mt-2">
                 Above human-level accuracy
               </p>
             </motion.div>
@@ -923,137 +1092,144 @@ const HomePage = () => {
         </motion.div>
 
         {/* Add FlowchartSection */}
-        <FlowchartSection />
+        {/* <FlowchartSection /> */}
       </motion.section>
 
-
-      {/* Services Title */}
-      {/* <motion.div ... > ... </motion.div> */}
-
-      {/* Multiply Workforce Section - Optimized Animation */}
-      <div
-        ref={workforceRef}
-        className="w-full py-12 sm:py-16 px-4 sm:px-6 md:px-12 relative z-10 apply-grid-pattern"
+      {/* Scroll-reveal for main sections */}
+      <motion.div
+        ref={sectionRef}
+        initial="hidden"
+        animate={sectionControls}
+        variants={{
+          hidden: { opacity: 0, y: 40 },
+          visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: 'easeOut' } }
+        }}
       >
-        <motion.div
-          className="text-center mb-8 sm:mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: isWorkforceInView ? 1 : 0, y: isWorkforceInView ? 0 : 20 }}
-          transition={{ duration: 0.4 }}
+        {/* Multiply Workforce Section - Optimized Animation */}
+        <div
+          ref={workforceRef}
+          className="w-full py-12 sm:py-16 px-4 sm:px-6 md:px-12 relative z-10 apply-grid-pattern"
         >
-          <h3 className="text-xpectrum-purple font-medium tracking-wide uppercase mb-2 text-sm sm:text-base">WHY HIRE XPECTRUM</h3>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-black mb-4">
-            Multiply your workforce<br />in minutes
-          </h1>
-        </motion.div>
-
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 px-4">
           <motion.div
-            className="w-full md:w-2/5"
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: isWorkforceInView ? 1 : 0, x: isWorkforceInView ? 0 : -30 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
+            className="text-center mb-8 sm:mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: isWorkforceInView ? 1 : 0, y: isWorkforceInView ? 0 : 20 }}
+            transition={{ duration: 0.4 }}
           >
-            <div className="flex items-center mb-4">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 mr-4 text-xpectrum-purple">
-                <motion.svg
-                  viewBox="0 0 100 100"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-full h-full"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: isWorkforceInView ? 1 : 0 }}
-                  transition={{ duration: 1, delay: 0.2 }}
-                >
-                  <motion.circle
-                    cx="50" cy="50" r="40"
-                    stroke="currentColor"
-                    strokeWidth="6"
-                    fill="none"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: isWorkforceInView ? 1 : 0 }}
-                    transition={{ duration: 1 }}
-                  />
-                  <motion.path
-                    d="M30,50 L45,65 L70,35"
-                    stroke="currentColor"
-                    strokeWidth="6"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: isWorkforceInView ? 1 : 0 }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                  />
-                </motion.svg>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-bold">Solution</h2>
-            </div>
+            <h3 className="text-xpectrum-purple font-medium tracking-wide uppercase mb-2 text-sm sm:text-base">WHY HIRE XPECTRUM</h3>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-black mb-4">
+              Multiply your workforce<br />in minutes
+            </h1>
+          </motion.div>
 
-            <p className="text-gray-700 text-base sm:text-lg mb-6">
-              At Xpectrum, we are building a cutting-edge Multimodal LLM Agentic System designed to go beyond traditional AI. Our platform understands deep sentiment, maintains contextual memory, and executes tasks autonomously—transforming how enterprises operate by eliminating manual dependencies and enabling intelligent automation at scale.
-            </p>
-
-            <motion.button
-              className="bg-xpectrum-darkpurple hover:bg-xpectrum-purple text-white py-2 sm:py-3 px-6 sm:px-8 rounded-full font-medium transition duration-300 w-full sm:w-auto"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 px-4">
+            <motion.div
+              className="w-full md:w-2/5"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: isWorkforceInView ? 1 : 0, x: isWorkforceInView ? 0 : -30 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
             >
-              Explore integrations
-            </motion.button>
-          </motion.div>
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 mr-4 text-[#1a763a]">
+                  <motion.svg
+                    viewBox="0 0 100 100"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-full h-full"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: isWorkforceInView ? 1 : 0 }}
+                    transition={{ duration: 1, delay: 0.2 }}
+                  >
+                    <motion.circle
+                      cx="50" cy="50" r="40"
+                      stroke="currentColor"
+                      strokeWidth="6"
+                      fill="none"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: isWorkforceInView ? 1 : 0 }}
+                      transition={{ duration: 1 }}
+                    />
+                    <motion.path
+                      d="M30,50 L45,65 L70,35"
+                      stroke="currentColor"
+                      strokeWidth="6"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: isWorkforceInView ? 1 : 0 }}
+                      transition={{ duration: 1, delay: 0.5 }}
+                    />
+                  </motion.svg>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#1a763a]">Solution</h2>
+              </div>
 
-          <motion.div
-            className="w-full md:w-3/5 flex overflow-hidden h-[20rem] sm:h-[24rem] md:h-[32rem]"
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: isWorkforceInView ? 1 : 0, x: isWorkforceInView ? 0 : 30 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-          >
-            <div className="w-1/2 overflow-hidden relative h-full px-1 sm:px-2">
-              <motion.div
-                ref={leftContentRef}
-                className="absolute w-full"
-                animate={{
-                  y: [0, -leftHeight || -800]
-                }}
-                transition={{
-                  y: {
-                    repeat: Infinity,
-                    repeatType: "loop",
-                    duration: 30,
-                    ease: "linear"
-                  }
-                }}
-              >
-                {[...leftContent, ...leftContent].map((item, index) => (
-                  <Card key={`left-${index}`} title={item} className="mb-3 sm:mb-4" />
-                ))}
-              </motion.div>
-            </div>
+              <p className="text-gray-700 text-base sm:text-lg mb-6">
+                At Xpectrum, we are building a cutting-edge Multimodal LLM Agentic System designed to go beyond traditional AI. Our platform understands deep sentiment, maintains contextual memory, and executes tasks autonomously—transforming how enterprises operate by eliminating manual dependencies and enabling intelligent automation at scale.
+              </p>
 
-            <div className="w-1/2 overflow-hidden relative h-full px-1 sm:px-2">
-              <motion.div
-                ref={rightContentRef}
-                className="absolute w-full"
-                animate={{
-                  y: [-rightHeight || -800, 0]
-                }}
-                transition={{
-                  y: {
-                    repeat: Infinity,
-                    repeatType: "loop",
-                    duration: 30,
-                    ease: "linear"
-                  }
-                }}
+              <motion.button
+                className="bg-[#1a763a] hover:bg-[#4CAF50] text-white py-2 sm:py-3 px-6 sm:px-8 rounded-full font-medium transition duration-300 w-full sm:w-auto"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
               >
-                {[...rightContent, ...rightContent].map((item, index) => (
-                  <Card key={`right-${index}`} title={item} className="mb-3 sm:mb-4" />
-                ))}
-              </motion.div>
-            </div>
-          </motion.div>
+                Explore integrations
+              </motion.button>
+            </motion.div>
+
+            <motion.div
+              className="w-full md:w-3/5 flex overflow-hidden h-[20rem] sm:h-[24rem] md:h-[32rem]"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: isWorkforceInView ? 1 : 0, x: isWorkforceInView ? 0 : 30 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
+              <div className="w-1/2 overflow-hidden relative h-full px-1 sm:px-2">
+                <motion.div
+                  ref={leftContentRef}
+                  className="absolute w-full"
+                  animate={{
+                    y: [0, -leftHeight || -800]
+                  }}
+                  transition={{
+                    y: {
+                      repeat: Infinity,
+                      repeatType: "loop",
+                      duration: 30,
+                      ease: "linear"
+                    }
+                  }}
+                >
+                  {[...leftContent, ...leftContent].map((item, index) => (
+                    <Card key={`left-${index}`} title={item} className="mb-3 sm:mb-4" />
+                  ))}
+                </motion.div>
+              </div>
+
+              <div className="w-1/2 overflow-hidden relative h-full px-1 sm:px-2">
+                <motion.div
+                  ref={rightContentRef}
+                  className="absolute w-full"
+                  animate={{
+                    y: [-rightHeight || -800, 0]
+                  }}
+                  transition={{
+                    y: {
+                      repeat: Infinity,
+                      repeatType: "loop",
+                      duration: 30,
+                      ease: "linear"
+                    }
+                  }}
+                >
+                  {[...rightContent, ...rightContent].map((item, index) => (
+                    <Card key={`right-${index}`} title={item} className="mb-3 sm:mb-4" />
+                  ))}
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Universal AI Employee Section - Optimized Animation */}
       <div
@@ -1066,12 +1242,12 @@ const HomePage = () => {
           animate={{ opacity: isUniversalInView ? 1 : 0, y: isUniversalInView ? 0 : 20 }}
           transition={{ duration: 0.4 }}
         >
-          <p className="text-xpectrum-purple text-xl sm:text-2xl font-medium mb-2">Xpectrum</p>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-6 sm:mb-8">
+          <p className="text-[#1a763a] text-xl sm:text-2xl font-medium mb-2">Xpectrum</p>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-dark leading-tight mb-6 sm:mb-8">
             Your Universal AI<br />Employee
           </h1>
           <motion.button
-            className="bg-xpectrum-darkpurple hover:bg-xpectrum-purple text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-medium text-base sm:text-lg transition duration-300 w-full sm:w-auto"
+            className="bg-[#1a763a] hover:bg-[#4CAF50] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-medium text-base sm:text-lg transition duration-300 w-full sm:w-auto"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >
@@ -1087,13 +1263,13 @@ const HomePage = () => {
         >
           <div className="relative w-full max-w-[280px] sm:max-w-lg aspect-square">
             <motion.div
-              className="absolute inset-0 bg-xpectrum-purple rounded-full flex items-center justify-center overflow-hidden"
+              className="absolute inset-0 bg-[#1a763a] rounded-full flex items-center justify-center overflow-hidden"
               animate={{
                 scale: [1, 1.03, 1],
                 boxShadow: [
-                  "0 0 0 rgba(123, 104, 238, 0.4)",
-                  "0 0 15px rgba(123, 104, 238, 0.5)",
-                  "0 0 0 rgba(123, 104, 238, 0.4)"
+                  "0 0 0 rgba(26, 118, 58, 0.4)",
+                  "0 0 15px rgba(26, 118, 58, 0.5)",
+                  "0 0 0 rgba(26, 118, 58, 0.4)"
                 ]
               }}
               transition={{
@@ -1117,7 +1293,7 @@ const HomePage = () => {
               </motion.div>
 
               <div className="text-white text-center px-4 sm:px-8 text-xl sm:text-2xl md:text-3xl font-medium leading-tight z-10">
-                Think the<br /><span className="text-[#FFEF00]">Unthinkable</span><br />with us
+                Think the<br /><span className="text-[#4CAF50]">Unthinkable</span><br />with us
               </div>
             </motion.div>
           </div>
@@ -1126,7 +1302,6 @@ const HomePage = () => {
 
       {/* === REMOVED How Xpectrum Works Section (Dynamic) === */}
       {/* <motion.div ... > ... </motion.div> */}
-
 
       {/* Global styles */}
       <style>{`
@@ -1187,20 +1362,20 @@ const HomePage = () => {
         }
         
         ::-webkit-scrollbar-thumb {
-          background: rgba(123, 104, 238, 0.6);
+          background: rgba(26, 118, 58, 0.6);
           border-radius: 4px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-          background: rgba(123, 104, 238, 0.8);
+          background: rgba(26, 118, 58, 0.8);
         }
 
         /* Enhanced Background Styles */
         .background-gradient-container {
-          --gradient-color-1: #f0e6ff; /* Lighter purple */
-          --gradient-color-2: #e6f0ff; /* Lighter blue */
-          --gradient-color-3: #fff2e6; /* Lighter orange */
-          --gradient-color-4: #ffe6f2; /* Lighter pink */
+          --gradient-color-1: #FFF9E6; /* Warm cream */
+          --gradient-color-2: #FFFFFF; /* White */
+          --gradient-color-3: #FFF9E6; /* Warm cream */
+          --gradient-color-4: #FFFFFF; /* White */
 
           background: linear-gradient(
             -45deg,
@@ -1213,26 +1388,6 @@ const HomePage = () => {
           animation: gradientBG 15s ease infinite;
           overflow: hidden;
           position: relative;
-        }
-
-        /* Simple mouse-following gradient glow */
-        .background-gradient-container::before {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: radial-gradient(
-            400px circle at var(--mouse-x) var(--mouse-y),
-            rgba(123, 104, 238, 0.25) 0%,
-            rgba(123, 104, 238, 0.08) 30%,
-            transparent 60%
-          );
-          z-index: 0;
-          pointer-events: none;
-          will-change: background;
-          filter: blur(4px);
         }
 
         @keyframes gradientBG {
@@ -1281,14 +1436,11 @@ const HomePage = () => {
           position: absolute;
           inset: 0;
           background-image:
-            linear-gradient(to right, rgba(123, 104, 238, 0.08) 1px, transparent 1px), /* Reduced opacity */
-            linear-gradient(to bottom, rgba(123, 104, 238, 0.08) 1px, transparent 1px); /* Reduced opacity */
+            linear-gradient(to right, rgba(26, 118, 58, 0.08) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(26, 118, 58, 0.08) 1px, transparent 1px);
           background-size: 40px 40px;
           pointer-events: none;
           z-index: 0;
-          mask-image: radial-gradient(circle at var(--mouse-x) var(--mouse-y), black 0%, rgba(0, 0, 0, 0.8) 30%, transparent 80%);
-          -webkit-mask-image: radial-gradient(circle at var(--mouse-x) var(--mouse-y), black 0%, rgba(0, 0, 0, 0.8) 30%, transparent 80%);
-          will-change: mask-image, -webkit-mask-image;
         }
         
         /* Ensure content sections with backgrounds appear above the fixed background */
@@ -1320,6 +1472,26 @@ const HomePage = () => {
           text-overflow: ellipsis;
           white-space: nowrap;
         }
+
+        @keyframes glow {
+          0% {
+            transform: scale(0.8);
+            opacity: 0.2;
+          }
+          100% {
+            transform: scale(1.2);
+            opacity: 0.3;
+          }
+        }
+
+        @keyframes gradientMove {
+          0% { background-position: 0% 50%; }
+          100% { background-position: 100% 50%; }
+        }
+        .animate-gradient-move {
+          background-size: 200% 200%;
+          animation: gradientMove 3s linear infinite alternate;
+        }
       `}</style>
       
       {/* Floating particles */}
@@ -1331,7 +1503,7 @@ const HomePage = () => {
             style={{
               width: `${Math.random() * 5 + 2}px`,
               height: `${Math.random() * 5 + 2}px`,
-              background: `rgba(123, 104, 238, ${Math.random() * 0.15 + 0.05})`,
+              background: `rgba(26, 118, 58, ${Math.random() * 0.15 + 0.05})`,
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
               animation: `float-particle ${Math.random() * 10 + 10}s infinite alternate ease-in-out`,
@@ -1342,6 +1514,16 @@ const HomePage = () => {
           />
         ))}
       </div>
+
+      
+      {/* Chat Modal Overlay and ChatComponent */}
+      {!isChatOpen && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center">
+          <div onClick={e => e.stopPropagation()}>
+            <ChatComponentXpectrumDemo />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

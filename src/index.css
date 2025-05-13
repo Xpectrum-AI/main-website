@@ -13,35 +13,42 @@
     --popover: 255 249 230; /* #FFF9E6 */
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 262 83% 63%; /* Purple */
-    --primary-foreground: 210 40% 98%;
+    --primary: 144 63% 28%; /* #1a763a Deep primary green */
+    --primary-foreground: 144 72% 95%; /* #f0fdf4 */
 
-    --secondary: 291 84% 61%; /* Magenta */
+    --secondary: 122 39% 53%; /* #4CAF50 Vibrant green */
     --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 210 40% 96.1%;
+    --muted: 144 28% 85%; /* #cce3d4 Muted green */
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 199 95% 48%; /* Blue */
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 144 63% 28%; /* #1a763a Deep primary green */
+    --accent-foreground: 144 72% 95%; /* #f0fdf4 */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 144 28% 85%; /* #cce3d4 Muted green for borders */
+    --input: 144 28% 85%; /* #cce3d4 Muted green for inputs */
+    --ring: 144 63% 28%; /* #1a763a Deep primary green */
 
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-primary: 144 63% 28%; /* #1a763a Deep primary green */
+    --sidebar-primary-foreground: 144 72% 95%; /* #f0fdf4 */
+    --sidebar-accent: 144 44% 92%; /* #e6f4ea Pastel green */
+    --sidebar-accent-foreground: 144 60% 22%; /* #155e2e Dark green */
+    --sidebar-border: 144 28% 85%; /* #cce3d4 Muted green */
+    --sidebar-ring: 144 63% 28%; /* #1a763a Deep primary green */
+
+    --greenish: 144 63% 28%;           /* #1a763a */
+    --greenish-dark: 144 60% 22%;      /* #155e2e */
+    --greenish-light: 122 39% 53%;     /* #4CAF50 */
+    --greenish-muted: 144 28% 85%;     /* #cce3d4 */
+    --greenish-pastel: 144 44% 92%;    /* #e6f4ea */
+    --greenish-foreground: 144 72% 95%;/* #f0fdf4 */
   }
 
   .dark {
@@ -54,32 +61,33 @@
     --popover: 255 249 230; /* #FFF9E6 */
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 144 72% 95%; /* #f0fdf4 Light green */
+    --primary-foreground: 144 60% 22%; /* #155e2e Dark green */
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 144 60% 22%; /* #155e2e Dark green */
+    --secondary-foreground: 144 72% 95%; /* #f0fdf4 Light green */
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 144 60% 22%; /* #155e2e Dark green */
+    --muted-foreground: 144 44% 92%; /* #e6f4ea Pastel green */
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 144 60% 22%; /* #155e2e Dark green */
+    --accent-foreground: 144 72% 95%; /* #f0fdf4 Light green */
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --border: 144 60% 22%; /* #155e2e Dark green */
+    --input: 144 60% 22%; /* #155e2e Dark green */
+    --ring: 144 44% 92%; /* #e6f4ea Pastel green */
+    
+    --sidebar-background: 144 60% 22%; /* #155e2e Dark green */
+    --sidebar-foreground: 144 44% 92%; /* #e6f4ea Pastel green */
+    --sidebar-primary: 122 39% 53%; /* #4CAF50 Vibrant green */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 144 63% 28%; /* #1a763a Deep primary green */
+    --sidebar-accent-foreground: 144 44% 92%; /* #e6f4ea Pastel green */
+    --sidebar-border: 144 63% 28%; /* #1a763a Deep primary green */
+    --sidebar-ring: 122 39% 53%; /* #4CAF50 Vibrant green */
   }
 }
 
@@ -173,7 +181,7 @@
 }
 
 .gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-primary;
+  @apply bg-clip-text text-transparent bg-gradient-green;
 }
 
 .service-card {
@@ -199,7 +207,7 @@
   inset: -3px; /* Control the border thickness */
   background: conic-gradient(
     from 0deg,
-    #84fab0, #8fd3f4, #a18cd1, #fbc2eb, #84fab0
+    #e6f4ea, #4CAF50, #1a763a, #155e2e, #e6f4ea
   );
   filter: blur(8px); /* Adjust blur amount */
   z-index: -1; /* Place behind the card */
@@ -224,16 +232,16 @@
 }
 
 .glow {
-  box-shadow: 0 0 15px 2px rgba(255, 165, 0, 0.6), 0 0 10px 5px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 15px 2px rgba(26, 118, 58, 0.6), 0 0 10px 5px rgba(230, 244, 234, 0.5);
   animation: glowing 1.5s infinite alternate;
 }
 
 @keyframes glowing {
   0% {
-    box-shadow: 0 0 10px 2px rgba(255, 165, 0, 0.6), 0 0 5px 4px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 10px 2px rgba(26, 118, 58, 0.6), 0 0 5px 4px rgba(230, 244, 234, 0.5);
   }
   100% {
-    box-shadow: 0 0 20px 5px rgba(255, 165, 0, 0.8), 0 0 15px 8px rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 20px 5px rgba(26, 118, 58, 0.8), 0 0 15px 8px rgba(230, 244, 234, 0.7);
   }
 }
 
@@ -254,5 +262,5 @@
 }
 
 .nav-link {
-  @apply relative inline-block text-gray-700 hover:text-xpectrum-purple transition-colors duration-200 after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-xpectrum-purple after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
+  @apply relative inline-block text-gray-700 hover:text-greenish transition-colors duration-200 after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-greenish after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
 }
