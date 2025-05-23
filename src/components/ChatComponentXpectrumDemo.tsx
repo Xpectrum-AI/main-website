@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, ChangeEvent } from "react";
 import ReactMarkdown from 'react-markdown';
 import { HelpCircle, BarChart2, Paperclip, Link as LinkIcon, Image as ImageIcon, X, RefreshCw, Loader, MessageSquare, Send } from 'lucide-react';
+import apiService from '../lib/api';
 
 // Types
 // ... (reuse MessageType and AttachedFile types from ChatComponent)
@@ -21,8 +22,7 @@ interface AttachedFile {
   url?: string;
 }
 
-// Hardcoded config for XpectrumDemo
-const API_KEY = "app-Dw187NRXUj05STCXMhKeqFbY";
+// Remove hardcoded API_KEY
 const BASE_URL = "https://demo.xpectrum-ai.com/v1";
 const WELCOME_MESSAGE = "Welcome to Xpectrum AI Demo! How can I help you today?";
 const PLACEHOLDER_TEXT = "Ask anything about our Agentic AI, Voice, CaaS...";
@@ -66,6 +66,23 @@ const ChatComponentXpectrumDemo: React.FC = () => {
   const linkInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [apiKey, setApiKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchApiKey = async () => {
+      try {
+        const response = await apiService.getApiKeys();
+        setApiKey(response.data.XpectrumDemo);
+      } catch (error) {
+        console.error('Error fetching API key:', error);
+        setMessages(prev => [...prev, { 
+          type: "error", 
+          content: "Failed to initialize chat. Please try again later." 
+        }]);
+      }
+    };
+    fetchApiKey();
+  }, []);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -96,6 +113,14 @@ const ChatComponentXpectrumDemo: React.FC = () => {
   }, [isChatOpen, showAttachmentOptions]);
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    if (!apiKey) {
+      setMessages(prev => [...prev, { 
+        type: "error", 
+        content: "Chat is not properly initialized. Please try again later." 
+      }]);
+      return;
+    }
+
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
       if (file.size > 5 * 1024 * 1024) {
@@ -114,7 +139,7 @@ const ChatComponentXpectrumDemo: React.FC = () => {
         const response = await fetch(`${BASE_URL}/files/upload`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${API_KEY}`
+            'Authorization': `Bearer ${apiKey}`
           },
           body: formData
         });
@@ -272,6 +297,14 @@ const ChatComponentXpectrumDemo: React.FC = () => {
   };
 
   const sendMessage = async (forcedQuery?: string) => {
+    if (!apiKey) {
+      setMessages(prev => [...prev, { 
+        type: "error", 
+        content: "Chat is not properly initialized. Please try again later." 
+      }]);
+      return;
+    }
+
     const messageText = forcedQuery || query;
     if ((!messageText.trim() && attachedFiles.length === 0) || isLoading) return;
     setSearchQuery(messageText || "Analyzing attachments...");
@@ -317,7 +350,7 @@ const ChatComponentXpectrumDemo: React.FC = () => {
       const response = await fetch(`${BASE_URL}/chat-messages`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${API_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
           Accept: "text/event-stream"
         },
@@ -448,7 +481,7 @@ const ChatComponentXpectrumDemo: React.FC = () => {
           ref={chatContainerRef}
           className={`absolute bottom-32 right-0 rounded-3xl 
             w-[90vw] max-w-[500px] sm:w-[400px] md:w-[450px] lg:w-[500px]
-            h-[65vh] max-h-[600px] sm:h-[500px] md:h-[550px] lg:h-[600px]
+            h-[65vh] max-h-[600px] sm:h-[350px] md:h-[450px] lg:h-[575px]
             flex flex-col overflow-hidden shadow-xl
             ${isClosing ? 'animate-bubbleClose' : 'animate-bubbleOpen'} bg-greenish-pastel`}
           style={{

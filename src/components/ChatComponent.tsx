@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, ChangeEvent } from "react";
 import ReactMarkdown from 'react-markdown';
 import { HelpCircle, BarChart2, Paperclip, Link as LinkIcon, Image as ImageIcon, X, RefreshCw, Loader, MessageSquare, Send } from 'lucide-react';
+import apiService from '../lib/api';
 
 type MessageType = {
   type: "user" | "bot" | "error";
@@ -22,16 +23,8 @@ interface AttachedFile {
 // Define props interface with domain types
 interface ChatComponentProps {
   assistantName?: string;
-  domain: keyof typeof API_KEYS | keyof typeof DOMAIN_CONFIG;
+  domain: keyof typeof DOMAIN_CONFIG;
 }
-
-// Use environment variables
-const API_KEYS = {
-  HRMS: "app-7cE1DmqobC2aVLBVQz1DAbaM",
-  Insurance: "app-MU2OyM1rgRrnRebt2BPBpK5r",
-  Hospitality: "app-vGvMMAK3o0rxeAHOWaj96RCG",
-  XpectrumDemo: "app-Dw187NRXUj05STCXMhKeqFbY"
-};
 
 // Domain-specific configuration
 const DOMAIN_CONFIG = {
@@ -54,13 +47,21 @@ const DOMAIN_CONFIG = {
 };
 
 const BASE_URL = (domain => {
-  if (domain === 'XpectrumDemo') return 'https://demo.xpectrum-ai.com/v1';
-  return "https://api.next-agi.com/v1";
+  if (domain === 'Insurance') {
+    return 'https://rnd.xpectrum-ai.com/v1';
+  }
+  return 'https://demo.xpectrum-ai.com/v1';
 });
 
 // Function to get API key based on domain
-const getApiKey = (domain: keyof typeof API_KEYS = 'HRMS') => {
-  return API_KEYS[domain];
+const getApiKey = async (domain: keyof typeof DOMAIN_CONFIG = 'HRMS') => {
+  try {
+    const response = await apiService.getApiKeys();
+    return response.data[domain];
+  } catch (error) {
+    console.error('Error fetching API key:', error);
+    throw error;
+  }
 };
 
 // Get domain config based on domain name
@@ -135,6 +136,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const linkInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [apiKey, setApiKey] = useState<string | null>(null);
 
   // Auto-adjust textarea height
   useEffect(() => {
@@ -185,8 +187,33 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     };
   }, [isOpen, showAttachmentOptions]);
 
+  // Add useEffect to fetch API key
+  useEffect(() => {
+    const fetchApiKey = async () => {
+      try {
+        const key = await getApiKey(domain);
+        setApiKey(key);
+      } catch (error) {
+        console.error('Error fetching API key:', error);
+        setMessages(prev => [...prev, { 
+          type: "error", 
+          content: "Failed to initialize chat. Please try again later." 
+        }]);
+      }
+    };
+    fetchApiKey();
+  }, [domain]);
+
   // Handle file selection
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    if (!apiKey) {
+      setMessages(prev => [...prev, { 
+        type: "error", 
+        content: "Chat is not properly initialized. Please try again later." 
+      }]);
+      return;
+    }
+
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
       console.log("File selected:", {
@@ -232,12 +259,12 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         }
 
         console.log("Sending request to:", `${BASE_URL(domain)}/files/upload`);
-        console.log("Using API key:", getApiKey(domain));
+        console.log("Using API key:", apiKey);
         
         const response = await fetch(`${BASE_URL(domain)}/files/upload`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${getApiKey(domain)}`
+            'Authorization': `Bearer ${apiKey}`
           },
           body: formData
         });
@@ -488,6 +515,14 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   };
 
   const sendMessage = async (forcedQuery?: string) => {
+    if (!apiKey) {
+      setMessages(prev => [...prev, { 
+        type: "error", 
+        content: "Chat is not properly initialized. Please try again later." 
+      }]);
+      return;
+    }
+
     const messageText = forcedQuery || query;
     if ((!messageText.trim() && attachedFiles.length === 0) || isLoading) return;
 
@@ -543,7 +578,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       const response = await fetch(`${BASE_URL(domain)}/chat-messages`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${getApiKey(domain as keyof typeof API_KEYS)}`,
+          Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
           Accept: "text/event-stream"
         },
@@ -726,7 +761,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           ref={chatContainerRef}
           className={`absolute bottom-32 right-0 rounded-3xl 
             w-[90vw] max-w-[500px] sm:w-[400px] md:w-[450px] lg:w-[500px]
-            h-[65vh] max-h-[600px] sm:h-[500px] md:h-[550px] lg:h-[600px]
+            h-[65vh] max-h-[600px] sm:h-[350px] md:h-[450px] lg:h-[575px]
             flex flex-col overflow-hidden shadow-xl
             ${isClosing 
               ? 'animate-bubbleClose' 

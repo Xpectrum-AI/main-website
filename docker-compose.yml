@@ -1,17 +1,30 @@
-version: '3.8'
-
 services:
-  xpectrum-app:
+  frontend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: xpectrum-app
+    container_name: xpectrum-frontend
     restart: unless-stopped
     ports:
       - "8081:80"
-    # Uncomment and configure if you need environment variables
+    depends_on:
+      - backend
     environment:
-       - NODE_ENV=production
+      - NODE_ENV=production
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: xpectrum-backend
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    environment:
+      - NODE_ENV=production
+      - AWS_ACCESS_KEY_ID=AKIAZKY542Z6FSTWFY26
+      - AWS_SECRET_ACCESS_KEY=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
+      - AWS_REGION=us-east-1
     
     # Uncomment if you need to mount volumes
     # volumes:
