@@ -6,6 +6,11 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5001;
 
+// Cache configuration
+let secretCache = null;
+let lastFetchTime = null;
+const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; 
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -19,16 +24,30 @@ const secretsClient = new SecretsManagerClient({
   }
 });
 
-// Function to get secret from AWS Secrets Manager
+// Function to get secret from AWS Secrets Manager with caching
 async function getSecret(secretName) {
+  const now = Date.now();
+  
+  // Return cached secret if it exists and is not expired
+  if (secretCache && lastFetchTime && (now - lastFetchTime < CACHE_DURATION)) {
+    console.log('Returning cached secret');
+    return secretCache;
+  }
+
   try {
+    console.log('Fetching fresh secret from AWS');
     const response = await secretsClient.send(
       new GetSecretValueCommand({
         SecretId: secretName,
         VersionStage: "AWSCURRENT"
       })
     );
-    return JSON.parse(response.SecretString);
+    
+    // Update cache
+    secretCache = JSON.parse(response.SecretString);
+    lastFetchTime = now;
+    
+    return secretCache;
   } catch (error) {
     console.error('Error fetching secret:', error);
     throw error;
