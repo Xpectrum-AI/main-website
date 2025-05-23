@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -64,14 +63,22 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				xpectrum: {
-					purple: '#8B5CF6',
-					magenta: '#D946EF',
-					blue: '#0EA5E9',
-					darkpurple: '#6E59A5',
-					lightpurple: '#E5DEFF',
+					purple: '#1a763a', // Changed from #4F46E5 to green
+					magenta: '#4CAF50', // Changed from #3B82F6 to green
+					blue: '#4CAF50',    // Changed from #3B82F6 to green
+					darkpurple: '#155e2e', // Changed from #4338CA to dark green
+					lightpurple: '#cce3d4', // Changed from #A5B4FC to muted green
 					dark: '#1A1F2C',
 					light: '#F6F6F7'
-				}
+				},
+				greenish: {
+					DEFAULT: '#1a763a',
+					dark: '#155e2e',
+					light: '#4CAF50',
+					pastel: '#e6f4ea',
+					muted: '#cce3d4',
+					foreground: '#f0fdf4',
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -133,10 +140,11 @@ export default {
 				'fade-in-up': 'fade-in-up 0.6s ease-out',
 			},
 			backgroundImage: {
-				'gradient-primary': 'linear-gradient(90deg, hsla(277, 75%, 84%, 1) 0%, hsla(297, 50%, 51%, 1) 100%)',
-				'gradient-secondary': 'linear-gradient(90deg, hsla(221, 45%, 73%, 1) 0%, hsla(220, 78%, 29%, 1) 100%)',
+				'gradient-primary': 'linear-gradient(90deg, #e6f4ea 0%, #1a763a 100%)', // Changed to green gradient
+				'gradient-secondary': 'linear-gradient(90deg, #cce3d4 0%, #155e2e 100%)', // Changed to green gradient
 				'gradient-accent': 'linear-gradient(90deg, hsla(46, 73%, 75%, 1) 0%, hsla(176, 73%, 88%, 1) 100%)',
-				'gradient-purple': 'linear-gradient(102.3deg, rgba(147,39,143,1) 5.9%, rgba(234,172,232,1) 64%, rgba(246,219,245,1) 89%)'
+				'gradient-purple': 'linear-gradient(102.3deg, #155e2e 5.9%, #4CAF50 64%, #e6f4ea 89%)', // Changed to green gradient
+				'gradient-green': 'linear-gradient(90deg, #1a763a 0%, #4CAF50 100%)',
 			}
 		}
 	},

@@ -7,7 +7,7 @@ const XpectrumLogo = () => (
   <div className="inline-flex flex-col items-center">
     <img src="/logo.png" alt="Xpectrum AI Logo" className="h-12 w-auto" />
     <p className="font-lexend text-base text-gray-800 text-center w-full tracking-[0.18em]">
-          Think<span className="text-violet-800 text-glow-violet">Unthinkable</span>
+          Think<span className="text-greenish text-glow-greenish">Unthinkable</span>  
     </p>
   </div>
 );
@@ -49,7 +49,7 @@ const Navbar = () => {
   return (
     <nav 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'
+        isScrolled ? 'bg-greenish-pastel shadow-md py-2' : 'bg-transparent py-4'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -64,25 +64,25 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             <Link
               to="/"
-              className={`nav-link ${isActive('/') ? activeLinkClass : 'text-gray-700 hover:text-xpectrum-purple'}`}
+              className={`nav-link ${isActive('/') ? activeLinkClass : 'text-gray-800 hover:text-xpectrum-purple'}`}
             >
               Home
             </Link>
             <Link 
               to="/services" 
-              className={`nav-link ${isActive('/services') ? activeLinkClass : 'text-gray-700 hover:text-xpectrum-purple'}`}
+              className={`nav-link ${isActive('/services') ? activeLinkClass : 'text-gray-800 hover:text-xpectrum-purple'}`}
             >
               Products
             </Link>
             <Link 
               to="/about" 
-              className={`nav-link ${isActive('/about') ? activeLinkClass : 'text-gray-700 hover:text-xpectrum-purple'}`}
+              className={`nav-link ${isActive('/about') ? activeLinkClass : 'text-gray-800 hover:text-xpectrum-purple'}`}
             >
               About
             </Link>
             <Link 
               to="/case-studies" 
-              className={`nav-link ${isActive('/case-studies') ? activeLinkClass : 'text-gray-700 hover:text-xpectrum-purple'}`}
+              className={`nav-link ${isActive('/case-studies') ? activeLinkClass : 'text-gray-800 hover:text-xpectrum-purple'}`}
             >
               Case Studies
             </Link>
@@ -111,7 +111,7 @@ const Navbar = () => {
           <div className="md:hidden">
             <button
               type="button"
-              className="text-gray-700 hover:text-xpectrum-purple focus:outline-none transition-all duration-300 p-2 rounded-lg bg-white/80 backdrop-blur-sm"
+              className="text-gray-800 hover:text-xpectrum-purple focus:outline-none transition-all duration-300 p-2 rounded-lg bg-white/80 backdrop-blur-sm"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               <span className="sr-only">Toggle menu</span>
@@ -127,29 +127,29 @@ const Navbar = () => {
       
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white/95 backdrop-blur-sm shadow-lg animate-slide-down border-t border-gray-100">
+        <div className="md:hidden bg-greenish-pastel/95 backdrop-blur-sm shadow-lg animate-slide-down border-t border-greenish-muted">
           <div className="px-4 pt-2 pb-3 space-y-2 sm:px-3 flex flex-col">
             <Link 
               to="/"
-              className={`block px-3 py-2 ${isActive('/') ? activeLinkClass : 'text-gray-700 hover:text-xpectrum-purple'}`}
+              className={`block px-3 py-2 ${isActive('/') ? activeLinkClass : 'text-gray-800 hover:text-xpectrum-purple'}`}
             >
               Home
             </Link>
             <Link 
               to="/services" 
-              className={`block px-3 py-2 ${isActive('/services') ? activeLinkClass : 'text-gray-700 hover:text-xpectrum-purple'}`}
+              className={`block px-3 py-2 ${isActive('/services') ? activeLinkClass : 'text-gray-800 hover:text-xpectrum-purple'}`}
             >
               Products
             </Link>
             <Link 
               to="/about" 
-              className={`block px-3 py-2 ${isActive('/about') ? activeLinkClass : 'text-gray-700 hover:text-xpectrum-purple'}`}
+              className={`block px-3 py-2 ${isActive('/about') ? activeLinkClass : 'text-gray-800 hover:text-xpectrum-purple'}`}
             >
               About
             </Link>
             <Link 
               to="/case-studies" 
-              className={`block px-3 py-2 ${isActive('/case-studies') ? activeLinkClass : 'text-gray-700 hover:text-xpectrum-purple'}`}
+              className={`block px-3 py-2 ${isActive('/case-studies') ? activeLinkClass : 'text-gray-800 hover:text-xpectrum-purple'}`}
             >
               Case Studies
             </Link>
@@ -166,7 +166,7 @@ const Navbar = () => {
               Partners
             </Link> */}
             <div className="mt-2 px-3 py-2">
-              <a href="mailto:ask@xpectrum-ai.com" className="text-gray-700 hover:text-xpectrum-purple flex items-center gap-2">
+              <a href="mailto:ask@xpectrum-ai.com" className="text-gray-800 hover:text-xpectrum-purple flex items-center gap-2">
                 <Mail size={16} />
                 <span>ask@xpectrum-ai.com</span>
               </a>

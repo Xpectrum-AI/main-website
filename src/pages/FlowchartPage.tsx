@@ -1281,11 +1281,11 @@ const FlowchartPage: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-warm-gradient">
       <Navbar />
-      <div className="flex-1 flex flex-col items-center justify-center p-4 mt-8">
-        <h1 className="text-4xl font-bold mb-12 mt-12 text-gray-800">Generative Workflow Visualization</h1>
+      <div className="flex-1 flex flex-col items-center justify-center p-4 mt-8 mb-12">
+        <h1 className="text-4xl font-bold mb-20 mt-32 text-gray-800">Generative Workflow Visualization</h1>
         
         {/* Workflow Selection Buttons */}
-        <div className="flex gap-4 mb-8">
+        <div className="flex gap-4 mb-12">
           {flowData.map((flow, index) => (
             <button
               key={index}
