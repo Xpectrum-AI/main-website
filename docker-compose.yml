@@ -8,7 +8,8 @@ services:
     ports:
       - "8081:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     environment:
       - NODE_ENV=production
 
@@ -20,11 +21,16 @@ services:
     restart: unless-stopped
     ports:
       - "5001:5001"
+    env_file:
+      - ./backend/.env
     environment:
       - NODE_ENV=production
-      - AWS_ACCESS_KEY_ID=AKIAZKY542Z6FSTWFY26
-      - AWS_SECRET_ACCESS_KEY=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
-      - AWS_REGION=us-east-1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/api/test-aws"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     
     # Uncomment if you need to mount volumes
     # volumes:
