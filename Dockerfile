@@ -10,11 +10,8 @@ RUN npm ci
 COPY . .
 
 # Set build-time environment variables
-ARG VITE_API_URL=http://localhost:8081/api
-# or ARG REACT_APP_API_URL=http://localhost:8081/api if using Create React App
-
+ARG VITE_API_URL=/api
 ENV VITE_API_URL=$VITE_API_URL
-# or ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
 # Build the application
 RUN npm run build
