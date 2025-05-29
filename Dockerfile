@@ -29,6 +29,7 @@ RUN apk update && apk upgrade && \
     apk add --no-cache \
     curl \
     jq \
+    wget \
     && rm -rf /var/cache/apk/*
 
 # Install AWS CLI v2
@@ -44,6 +45,7 @@ RUN adduser -D -H -u 1001 -s /sbin/nologin nginx-user
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Copy custom nginx configuration
+COPY nginx-main.conf /etc/nginx/nginx.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy entrypoint script
