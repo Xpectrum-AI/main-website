@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   frontend:
     build:
@@ -13,8 +15,20 @@ services:
     environment:
       - NODE_ENV=production
       - VITE_API_URL=/api
+      - VITE_WS_URL=ws://localhost:8000/ws/audio
     networks:
       - xpectrum-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   backend:
     build:
@@ -23,20 +37,38 @@ services:
     container_name: xpectrum-backend
     restart: unless-stopped
     ports:
-      - "5001:5001"
-    env_file:
-      - ./backend/.env
+      - "8000:8000"
     environment:
-      - NODE_ENV=production
+      - AWS_SECRETS_MANAGER_ID=${AWS_SECRETS_MANAGER_ID}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5001/api/test-aws"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+    volumes:
+      - ./backend/tmp:/tmp
     networks:
       - xpectrum-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
 networks:
   xpectrum-network:
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16

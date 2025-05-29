@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Get API URL from environment variable or use default
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -12,16 +12,29 @@ const api = axios.create({
 });
 
 // API service functions
-export const apiService = {
-  // Get API keys from backend
+const apiService = {
+  // Get available service API keys
   getApiKeys: async () => {
-    try {
-      const response = await api.get('/keys');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching API keys:', error);
-      throw error;
-    }
+    return axios.get('/api/service-keys');
+  },
+
+  // Voice chat endpoint
+  voiceChat: async (audioBlob: Blob) => {
+    const formData = new FormData();
+    formData.append('file', audioBlob, 'audio.webm');
+    
+    return axios.post('/api/voice-chat', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      responseType: 'blob',
+    });
+  },
+
+  // WebSocket connection for real-time voice chat
+  getWebSocketUrl: () => {
+    const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/audio';
+    return wsUrl;
   },
 
   // Test AWS connection
