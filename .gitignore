@@ -19,3 +19,9 @@ Thumbs.db
 # Build output
 dist/
 build/ 
+
+/backend/node_modules/
+/backend/dist/
+/backend/build/
+
+/backend/venv/

@@ -41,7 +41,12 @@ interface SpeechRecognition {
 }
 const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
-const ChatComponentXpectrumDemo: React.FC = () => {
+interface ChatComponentXpectrumDemoProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const ChatComponentXpectrumDemo: React.FC<ChatComponentXpectrumDemoProps> = ({ isOpen, onClose }) => {
   // State
   const [query, setQuery] = useState<string>("");
   const [conversationId, setConversationId] = useState<string>("");
@@ -50,7 +55,6 @@ const ChatComponentXpectrumDemo: React.FC = () => {
   ]);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const [isListening, setIsListening] = useState<boolean>(false);
   const [isClosing, setIsClosing] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
@@ -67,18 +71,21 @@ const ChatComponentXpectrumDemo: React.FC = () => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [apiKey, setApiKey] = useState<string | null>(null);
+  const [apiKeyLoading, setApiKeyLoading] = useState(true);
 
   useEffect(() => {
     const fetchApiKey = async () => {
+      setApiKeyLoading(true);
       try {
         const response = await apiService.getApiKeys();
         setApiKey(response.data.XpectrumDemo);
       } catch (error) {
-        console.error('Error fetching API key:', error);
         setMessages(prev => [...prev, { 
           type: "error", 
           content: "Failed to initialize chat. Please try again later." 
         }]);
+      } finally {
+        setApiKeyLoading(false);
       }
     };
     fetchApiKey();
@@ -99,8 +106,8 @@ const ChatComponentXpectrumDemo: React.FC = () => {
       if (chatButton?.contains(target)) {
         return;
       }
-      if (isChatOpen && chatContainerRef.current && !chatContainerRef.current.contains(target)) {
-        setIsChatOpen(false);
+      if (isOpen && chatContainerRef.current && !chatContainerRef.current.contains(target)) {
+        onClose();
       }
       if (showAttachmentOptions && !target.closest('.attachment-area') && !target.closest('.link-input-container')) {
         setShowAttachmentOptions(false);
@@ -110,7 +117,7 @@ const ChatComponentXpectrumDemo: React.FC = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isChatOpen, showAttachmentOptions]);
+  }, [isOpen, showAttachmentOptions, onClose]);
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     if (!apiKey) {
@@ -304,9 +311,8 @@ const ChatComponentXpectrumDemo: React.FC = () => {
       }]);
       return;
     }
-
     const messageText = forcedQuery || query;
-    if ((!messageText.trim() && attachedFiles.length === 0) || isLoading) return;
+    if ((!messageText.trim() && attachedFiles.length === 0) || isLoading || apiKeyLoading) return;
     setSearchQuery(messageText || "Analyzing attachments...");
     setIsGenerating(true);
     const payload = {
@@ -359,7 +365,12 @@ const ChatComponentXpectrumDemo: React.FC = () => {
       } as RequestInit);
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+        let backendError = errorText;
+        try {
+          const errorJson = JSON.parse(errorText);
+          backendError = errorJson.error || errorJson.message || errorText;
+        } catch {}
+        throw new Error(backendError);
       }
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
@@ -415,7 +426,7 @@ const ChatComponentXpectrumDemo: React.FC = () => {
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
-      setIsChatOpen(false);
+      onClose();
       setIsClosing(false);
     }, 300);
   };
@@ -455,28 +466,11 @@ const ChatComponentXpectrumDemo: React.FC = () => {
     light: 'bg-greenish-muted/30'
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6 md:bottom-8 md:right-8">
-      {/* Chat Button - Updated to be a single X icon */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          if (isChatOpen) {
-            handleClose();
-          } else {
-            setIsChatOpen(true);
-          }
-        }}
-        className={`bg-gradient-to-br ${theme.primary} text-white rounded-full p-4 sm:p-5 transition-all duration-300 flex items-center justify-center chat-button shadow-xl z-[100] fixed bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-8 relative border-2 border-white/50 ${isLoading ? 'glowing-blob' : ''} ${isChatOpen ? 'opacity-50 hover:opacity-100' : ''}`}
-        style={{ animationDuration: '3s' }}
-      >
-        <img
-          src="/xpectrumLogo.png"
-          alt="Xpectrum Logo"
-          className="h-7 w-7 sm:h-8 sm:w-8"
-        />
-      </button>
-      {isChatOpen && (
+      {isOpen && (
         <div
           ref={chatContainerRef}
           className={`absolute bottom-32 right-0 rounded-3xl 
@@ -697,7 +691,7 @@ const ChatComponentXpectrumDemo: React.FC = () => {
                   onKeyDown={handleKeyDown}
                   className="flex-1 px-3 py-2.5 min-h-[45px] max-h-[120px] focus:outline-none resize-none bg-transparent border-none text-sm"
                   placeholder={PLACEHOLDER_TEXT}
-                  disabled={isLoading}
+                  disabled={isLoading || apiKeyLoading}
                   rows={1}
                 />
               </div>
@@ -718,9 +712,9 @@ const ChatComponentXpectrumDemo: React.FC = () => {
                 </button>
                 <button
                   onClick={() => sendMessage()}
-                  disabled={isLoading || (!query.trim() && attachedFiles.length === 0)}
+                  disabled={isLoading || apiKeyLoading || (!query.trim() && attachedFiles.length === 0)}
                   className={`p-2 rounded-full transition-colors ${
-                    (!query.trim() && attachedFiles.length === 0) || isLoading
+                    (!query.trim() && attachedFiles.length === 0) || isLoading || apiKeyLoading
                       ? 'text-gray-400 cursor-not-allowed'
                       : theme.accent
                   }`}

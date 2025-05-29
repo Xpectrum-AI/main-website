@@ -16,6 +16,7 @@ import ContactPage from "./components/ContactPage";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import FlowchartPage from './pages/FlowchartPage';
+import VoiceAgent from './pages/VoiceAgent';
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/hrms" element={<HRMS />} />
               <Route path="/insurance" element={<Insurance />} />
               <Route path="/flowchart" element={<FlowchartPage />} />
+              <Route path="/voice-agent" element={<VoiceAgent />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>

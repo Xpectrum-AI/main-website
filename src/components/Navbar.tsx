@@ -87,6 +87,12 @@ const Navbar = () => {
               Case Studies
             </Link>
             {/* <Link
+              to="/voice-agent"
+              className={`nav-link ${isActive('/voice-agent') ? activeLinkClass : 'text-gray-800 hover:text-xpectrum-purple'}`}
+            >
+              Agents
+            </Link> */}
+            {/* <Link
               to="/flowchart"
               className={`nav-link ${isActive('/flowchart') ? activeLinkClass : 'text-gray-700 hover:text-xpectrum-purple'}`}
             >
@@ -153,18 +159,12 @@ const Navbar = () => {
             >
               Case Studies
             </Link>
-            {/* <Link
-              to="/flowchart"
-              className={`block px-3 py-2 ${isActive('/flowchart') ? activeLinkClass : 'text-gray-700 hover:text-xpectrum-purple'}`}
+            <Link
+              to="/voice-agent"
+              className={`block px-3 py-2 ${isActive('/voice-agent') ? activeLinkClass : 'text-gray-800 hover:text-xpectrum-purple'}`}
             >
-              Flowchart
-            </Link> */}
-            {/* <Link 
-              to="/partners" 
-              className={`block px-3 py-2 ${isActive('/partners') ? activeLinkClass : 'text-gray-700 hover:text-xpectrum-purple'}`}
-            >
-              Partners
-            </Link> */}
+              Agents
+            </Link>
             <div className="mt-2 px-3 py-2">
               <a href="mailto:ask@xpectrum-ai.com" className="text-gray-800 hover:text-xpectrum-purple flex items-center gap-2">
                 <Mail size={16} />

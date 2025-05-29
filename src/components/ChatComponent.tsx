@@ -216,16 +216,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      console.log("File selected:", {
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        lastModified: new Date(file.lastModified).toISOString()
-      });
       
       // Check file size (max 5MB - adjust if needed)
       if (file.size > 5 * 1024 * 1024) {
-        console.log("File size validation failed:", file.size, "bytes");
         setMessages(prev => [...prev, { 
           type: "error", 
           content: "File is too large. Maximum size is 5MB." 
@@ -236,7 +229,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       // Check file type - only allow images
       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
       if (!allowedTypes.includes(file.type)) {
-        console.log("File type validation failed:", file.type);
         setMessages(prev => [...prev, { 
           type: "error", 
           content: "Invalid file type. Please upload only JPG, PNG, GIF, or WebP images." 
