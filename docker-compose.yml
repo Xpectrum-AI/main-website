@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.8'    
 
 services:
   backend:
@@ -14,7 +14,6 @@ services:
       - AWS_SECRET_ACCESS_KEY=QgYE5fAa8JCyg04QJTLj71MPnYDHqa0vd5u61dty
       - AWS_DEFAULT_REGION=us-east-1
       - PORT=8000
-      - AWS_SECRETS_MANAGER_ID=${AWS_SECRETS_MANAGER_ID}
     volumes:
       - ./backend/tmp:/tmp
     networks:
@@ -32,13 +31,13 @@ services:
     container_name: xpectrum-frontend
     restart: unless-stopped
     ports:
-      - "8083:80"
+      - "8084:80"
     depends_on:
       - backend
     environment:
       - NODE_ENV=production
       - VITE_API_URL=/api
-      - VITE_WS_URL=ws://localhost:8083/api/ws/audio
+      - VITE_WS_URL=ws://localhost:8000/api/ws/audio
     networks:
       - xpectrum-network
     logging:

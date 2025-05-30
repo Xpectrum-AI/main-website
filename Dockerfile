@@ -24,19 +24,11 @@ RUN npm run build
 # Production stage
 FROM nginx:stable-alpine AS production
 
-# Install security updates and necessary tools (including wget and curl)
-RUN apk update && apk upgrade && \
-    apk add --no-cache \
+# Install security updates and necessary tools
+RUN apk add --no-cache \
     curl \
-    wget \
-    jq \
-    && rm -rf /var/cache/apk/*
-
-# Install AWS CLI v2 (optional - remove if not needed)
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-    unzip awscliv2.zip && \
-    ./aws/install && \
-    rm -rf aws awscliv2.zip
+    bash \
+    aws-cli
 
 # Create non-root user with a different UID
 RUN adduser -D -H -u 1001 -s /sbin/nologin nginx-user
