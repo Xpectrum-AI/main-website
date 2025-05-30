@@ -33,7 +33,7 @@ const apiService = {
 
   // WebSocket connection for real-time voice chat
   getWebSocketUrl: () => {
-    const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/audio';
+    const wsUrl = import.meta.env.VITE_WS_URL || 'wss://xpectrum-ai.com/api/ws/audio';
     return wsUrl;
   },
 
