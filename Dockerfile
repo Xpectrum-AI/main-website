@@ -24,15 +24,15 @@ RUN npm run build
 # Production stage
 FROM nginx:stable-alpine AS production
 
-# Install security updates and necessary tools
+# Install security updates and necessary tools (including wget and curl)
 RUN apk update && apk upgrade && \
     apk add --no-cache \
     curl \
-    jq \
     wget \
+    jq \
     && rm -rf /var/cache/apk/*
 
-# Install AWS CLI v2
+# Install AWS CLI v2 (optional - remove if not needed)
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
@@ -60,6 +60,12 @@ RUN chown -R nginx-user:nginx-user /usr/share/nginx/html && \
     chown -R nginx-user:nginx-user /etc/nginx/conf.d && \
     touch /var/run/nginx.pid && \
     chown -R nginx-user:nginx-user /var/run/nginx.pid
+
+# Create a simple health check page
+RUN echo '<!DOCTYPE html><html><body><h1>OK</h1></body></html>' > /usr/share/nginx/html/health.html
+
+# Create a 50x error page
+RUN echo '<!DOCTYPE html><html><body><h1>502 Bad Gateway</h1><p>Backend service unavailable</p></body></html>' > /usr/share/nginx/html/50x.html
 
 # Expose port 80
 EXPOSE 80

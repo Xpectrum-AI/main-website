@@ -15,12 +15,6 @@ services:
       - AWS_DEFAULT_REGION=us-east-1
       - PORT=8000
       - AWS_SECRETS_MANAGER_ID=${AWS_SECRETS_MANAGER_ID}
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health || curl -f http://localhost:8000/docs || curl -f http://localhost:8000/"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
     volumes:
       - ./backend/tmp:/tmp
     networks:
@@ -30,14 +24,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
-        reservations:
-          cpus: '0.5'
-          memory: 512M
 
   frontend:
     build:
@@ -48,20 +34,13 @@ services:
     ports:
       - "8083:80"
     depends_on:
-      backend:
-        condition: service_healthy
+      - backend
     environment:
       - NODE_ENV=production
       - VITE_API_URL=/api
       - VITE_WS_URL=ws://localhost:8083/api/ws/audio
     networks:
       - xpectrum-network
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80 || curl -f http://localhost:80"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
     logging:
       driver: "json-file"
       options:
