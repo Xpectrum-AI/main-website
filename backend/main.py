@@ -147,7 +147,7 @@ async def voice_chat(file: UploadFile = File(...)):
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
-@app.websocket("/ws/audio")
+@app.websocket("/api/ws/audio")
 async def websocket_audio(websocket: WebSocket):
     await websocket.accept()
     print("WebSocket connection accepted.")
