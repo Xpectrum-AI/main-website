@@ -7,6 +7,7 @@ import FlowchartSection from './FlowchartSection';
 import { cn } from '@/lib/utils';
 import ChatComponentXpectrumDemo from './ChatComponentXpectrumDemo';
 import useVoiceAgent from '../hooks/useVoiceAgent';
+import './css/gradient.css';
 
 // Company logos for carousel - ensure these paths are correct
 const companyLogos = [
@@ -802,7 +803,7 @@ const HomePage = () => {
         style={backgroundStyle}
       ></div> */}
 
-      <Navbar />
+      {/* <Navbar /> */}
       
       {/* Floating Info Container */}
       <AnimatePresence>
@@ -907,6 +908,7 @@ const HomePage = () => {
         )}
       </AnimatePresence>
 
+      {/* Hero Contents */}
       <motion.section
         ref={heroRef}
         className="w-full min-h-screen flex flex-col items-start justify-center px-4 sm:px-6 md:px-8 font-sans mt-12 sm:mt-16 lg:mt-20 mb-16 sm:mb-24 relative apply-grid-pattern"
@@ -914,150 +916,175 @@ const HomePage = () => {
         animate="visible"
         variants={heroVariants}
       >
-        <div className="w-full max-w-5xl ml-40 mt-8 sm:mt-16 sm:mb-10 flex flex-col items-start">
-          <div className="flex items-start justify-between w-full">
-            <div className="relative">
-              {/* Animated gradient headline */}
-              <motion.h1
-                className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-gray-900 leading-tight text-left px-2 sm:px-4 md:px-6 relative"
-                initial="hidden"
-                animate="visible"
-                variants={heroVariants}
-                custom={0}
-              >
-                <div className="absolute -inset-4 sm:-inset-6 md:-inset-8 bg-white/80 rounded-2xl shadow-xl -z-10 border border-xpectrum-purple/10" />
-                <motion.div
-                  className="h-12 xs:h-16 sm:h-20 relative text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold flex items-center justify-start w-full overflow-visible"
-                  initial="hidden"
-                  animate="visible"
-                  variants={heroVariants}
-                  custom={1}
-                >
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={deploymentMessages[currentMessageIndex]}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.5 }}
-                      className="flex items-center justify-start w-full gap-2 sm:gap-4 md:gap-6 min-h-[1.5rem] sm:min-h-[2rem] md:min-h-[2.5rem] py-1 sm:py-2 md:py-3"
-                    >
-                      <span className="bg-gradient-to-r from-[#1a763a] to-[#4CAF50] bg-clip-text text-transparent leading-normal text-left max-w-[300px] xs:max-w-[400px] sm:max-w-none animate-gradient-move">
-                        <span className="sm:hidden whitespace-pre-line text-base xs:text-lg leading-tight">
-                          {displayedMessage
-                            .replace(/ with | Your | the | for | from | and /, '$&\n')
-                            .replace(/Scale |Ready |Handle /, '\n$&')}
-                        </span>
-                        <span className="hidden sm:inline whitespace-nowrap">
-                          {displayedMessage}
-                        </span>
-                      </span>
-                    </motion.div>
-                  </AnimatePresence>
-                </motion.div>
-                <motion.span
-                  className="block mt-1 sm:mt-2 text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-tight sm:leading-normal text-dark text-left font-extrabold drop-shadow"
-                  initial="hidden"
-                  animate="visible"
-                  variants={heroVariants}
-                  custom={2}
-                >
-                  Xpectrum on Cloud,<br className="sm:hidden" /> On-Premises, or Hybrid
-                </motion.span>
-                <motion.span
-                  className="block mt-0.5 sm:mt-1 text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-gray-600 leading-tight sm:leading-normal text-left font-bold drop-shadow-sm"
-                  initial="hidden"
-                  animate="visible"
-                  variants={heroVariants}
-                  custom={3}
-                >
-                  Your Choice,<br className="sm:hidden" /> Our Expertise
-                </motion.span>
-              </motion.h1>
-            </div>
-            {/* Animated Bot Icon */}
-            <motion.div 
-              className={cn(
-                "cursor-pointer transition-all duration-300 hidden sm:block mr-20 mt-40 relative",
-                isHovered && "scale-110"
-              )}
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-              animate={{
-                y: [0, -16, 0],
-                rotate: [0, 3, 0, -3, 0],
-                scale: [1, 1.08, 1]
-              }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              <motion.div
-                initial={{ scale: 1 }}
-                animate={{ scale: isHovered ? 1.12 : 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Bot 
-                  size={140} 
-                  className="text-[#1a763a] hover:text-[#4CAF50] filter drop-shadow-2xl"
-                />
-              </motion.div>
-              {/* Enhanced glow effect */}
-              <div 
-                className="absolute inset-0 bg-[#1a763a] opacity-30 blur-3xl rounded-full -z-10 scale-150"
-                style={{
-                  animation: "glow 3s ease-in-out infinite alternate"
-                }}
-              />
-            </motion.div>
+
+        <div className="relative flex flex-col justify-center w-full mt-5 pb-20 rounded-[5rem] overflow-hidden gradient-bg">
+
+          <svg>
+            <defs>
+              <filter id="goo">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+                <feBlend in="SourceGraphic" in2="goo" />
+              </filter>
+            </defs>
+          </svg>
+
+          <div className="gradients-container">
+            <div className="g1"></div>
+            <div className="g2"></div>
+            <div className="g3"></div>
+            <div className="g4"></div>
+            <div className="g5"></div>
           </div>
-        </div>
-        <div className="max-w-5xl ml-40 w-full flex flex-col items-start px-2 sm:px-4">
-          <motion.div
-            className="w-full max-w-xl space-y-4 sm:space-y-6 flex flex-col items-start relative"
-            initial="hidden"
-            animate="visible"
-            variants={heroVariants}
-            custom={4}
-          >
-            <div className="h-10 sm:h-12 md:h-16 lg:h-20 relative text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#1a763a] flex items-center justify-start w-full">
-              <AnimatePresence mode="wait">
+
+
+          <div className="w-full max-w-5xl ml-40 mt-8 sm:mt-16 sm:mb-10 flex flex-col items-start">
+            <div className="flex items-start justify-between w-full">
+              <div className="relative">
+                {/* Animated gradient headline */}
+                <motion.h1
+                  className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-gray-900 leading-tight text-left px-2 sm:px-4 md:px-6 relative"
+                  initial="hidden"
+                  animate="visible"
+                  variants={heroVariants}
+                  custom={0}
+                  >
+                  <div className="absolute -inset-4 sm:-inset-6 md:-inset-8 bg-white/80 rounded-2xl shadow-xl -z-10 border border-xpectrum-purple/10" />
+                  <motion.div
+                    className="h-12 xs:h-16 sm:h-20 relative text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold flex items-center justify-start w-full overflow-visible"
+                    initial="hidden"
+                    animate="visible"
+                    variants={heroVariants}
+                    custom={1}
+                  >
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={deploymentMessages[currentMessageIndex]}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.5 }}
+                        className="flex items-center justify-start w-full gap-2 sm:gap-4 md:gap-6 min-h-[1.5rem] sm:min-h-[2rem] md:min-h-[2.5rem] py-1 sm:py-2 md:py-3"
+                      >
+                        <span className="bg-gradient-to-r from-[#1a763a] to-[#4CAF50] bg-clip-text text-transparent leading-normal text-left max-w-[300px] xs:max-w-[400px] sm:max-w-none animate-gradient-move">
+                          <span className="sm:hidden whitespace-pre-line text-base xs:text-lg leading-tight">
+                            {displayedMessage
+                              .replace(/ with | Your | the | for | from | and /, '$&\n')
+                              .replace(/Scale |Ready |Handle /, '\n$&')}
+                          </span>
+                          <span className="hidden sm:inline whitespace-nowrap">
+                            {displayedMessage}
+                          </span>
+                        </span>
+                      </motion.div>
+                    </AnimatePresence>
+                  </motion.div>
+                  <motion.span
+                    className="block mt-1 sm:mt-2 text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-tight sm:leading-normal text-dark text-left font-extrabold drop-shadow"
+                    initial="hidden"
+                    animate="visible"
+                    variants={heroVariants}
+                    custom={2}
+                  >
+                    Xpectrum on Cloud,<br className="sm:hidden" /> On-Premises, or Hybrid
+                  </motion.span>
+                  <motion.span
+                    className="block mt-0.5 sm:mt-1 text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-gray-600 leading-tight sm:leading-normal text-left font-bold drop-shadow-sm"
+                    initial="hidden"
+                    animate="visible"
+                    variants={heroVariants}
+                    custom={3}
+                  >
+                    Your Choice,<br className="sm:hidden" /> Our Expertise
+                  </motion.span>
+                </motion.h1>
+              </div>
+              {/* Animated Bot Icon */}
+              <motion.div 
+                className={cn(
+                  "cursor-pointer transition-all duration-300 hidden sm:block mr-20 mt-40 relative",
+                  isHovered && "scale-110"
+                )}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                animate={{
+                  y: [0, -16, 0],
+                  rotate: [0, 3, 0, -3, 0],
+                  scale: [1, 1.08, 1]
+                }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
                 <motion.div
-                  key={services[index].name}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.5 }}
-                  className="flex items-center justify-start w-full gap-2 sm:gap-4"
+                  initial={{ scale: 1 }}
+                  animate={{ scale: isHovered ? 1.12 : 1 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  <span className="flex-shrink-0 whitespace-nowrap text-left">{services[index].name}</span>
-                  <img
-                    src={services[index].icon}
-                    alt={services[index].name}
-                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain flex-shrink-0"
+                  <Bot 
+                    size={140} 
+                    className="text-[#1a763a] hover:text-[#4CAF50] filter drop-shadow-2xl"
                   />
                 </motion.div>
-              </AnimatePresence>
+                {/* Enhanced glow effect */}
+                <div 
+                  className="absolute inset-0 bg-[#1a763a] opacity-30 blur-3xl rounded-full -z-10 scale-150"
+                  style={{
+                    animation: "glow 3s ease-in-out infinite alternate"
+                  }}
+                />
+              </motion.div>
             </div>
-            <p className="text-gray-600 text-sm sm:text-base md:text-lg text-left px-0 mt-0.5 whitespace-nowrap mb-24">
-              Transform financial services processes across every function with Agentic AI.
-            </p>
-            <motion.button
-              className="bg-gradient-to-r from-[#1a763a] to-[#4CAF50] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-bold shadow-xl hover:from-[#4CAF50] hover:to-[#1a763a] transition duration-300 w-full sm:w-auto text-left flex items-center gap-2 overflow-hidden relative"
-              whileHover={{ scale: 1.08, boxShadow: "0 8px 32px rgba(26, 118, 58, 0.18)" }}
-              whileTap={{ scale: 0.97 }}
+          </div>
+          <div className="max-w-5xl ml-40 w-full flex flex-col items-start px-2 sm:px-4">
+            <motion.div
+              className="w-full max-w-xl space-y-4 sm:space-y-6 flex flex-col items-start relative"
               initial="hidden"
               animate="visible"
               variants={heroVariants}
-              custom={5}
+              custom={4}
             >
-              <Bot size={20} className="text-white" /> Hire Xpectrum
-              <Shimmer />
-            </motion.button>
-          </motion.div>
+              <div className="h-10 sm:h-12 md:h-16 lg:h-20 relative text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#1a763a] flex items-center justify-start w-full">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={services[index].name}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.5 }}
+                    className="flex items-center justify-start w-full gap-2 sm:gap-4"
+                  >
+                    <span className="flex-shrink-0 whitespace-nowrap text-left">{services[index].name}</span>
+                    <img
+                      src={services[index].icon}
+                      alt={services[index].name}
+                      className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain flex-shrink-0"
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+              <p className="text-gray-600 text-sm sm:text-base md:text-lg text-left px-0 mt-0.5 whitespace-nowrap mb-24">
+                Transform financial services processes across every function with Agentic AI.
+              </p>
+              <motion.button
+                className="bg-gradient-to-r from-[#1a763a] to-[#4CAF50] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-bold shadow-xl hover:from-[#4CAF50] hover:to-[#1a763a] transition duration-300 w-full sm:w-auto text-left flex items-center gap-2 overflow-hidden relative"
+                whileHover={{ scale: 1.08, boxShadow: "0 8px 32px rgba(26, 118, 58, 0.18)" }}
+                whileTap={{ scale: 0.97 }}
+                initial="hidden"
+                animate="visible"
+                variants={heroVariants}
+                custom={5}
+              >
+                <Bot size={20} className="text-white" /> Hire Xpectrum
+                <Shimmer />
+              </motion.button>
+            </motion.div>
+          
+          </div>
         </div>
+
         {/* Icons Section */}
         <motion.div
           className="w-full py-8 sm:py-12 mt-8 sm:mt-12"
@@ -1532,6 +1559,19 @@ Powered by swarm-based orchestration and intelligent fail-safes, they handle com
           background-size: 200% 200%;
           animation: gradientMove 3s linear infinite alternate;
         }
+
+        .animated-gradient {
+          background: linear-gradient(-45deg, #ffffff, #a8e6a1, #ffffff, #a8e6a1);
+          background-size: 400% 400%;
+          animation: gradientFlow 10s ease infinite;
+        }
+
+        @keyframes gradientFlow {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+
       `}</style>
       
       {/* Floating particles */}
