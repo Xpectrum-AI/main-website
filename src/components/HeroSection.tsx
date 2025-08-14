@@ -11,6 +11,7 @@ import ChatComponentXpectrumDemo from './ChatComponentXpectrumDemo';
 import useVoiceAgent from '../hooks/useVoiceAgent';
 import './css/gradient.css';
 import FeaturesSection from './sections/FeatureSection';
+import WorkforceSection from './sections/workforce/WorkforceSection';
 
 // Company logos for carousel - ensure these paths are correct
 const companyLogos = [
@@ -1163,7 +1164,7 @@ const HomePage = () => {
         {/* <FlowchartSection /> */}
       </motion.section>
 
-      {/* Scroll-reveal for main sections */}
+      {/* Multiply Workforce Section - Optimized Animation */}
       <motion.div
         ref={sectionRef}
         initial="hidden"
@@ -1173,133 +1174,7 @@ const HomePage = () => {
           visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: 'easeOut' } }
         }}
       >
-        {/* Multiply Workforce Section - Optimized Animation */}
-        <div
-          ref={workforceRef}
-          className="w-full py-12 sm:py-16 px-4 sm:px-6 md:px-12 relative z-10 apply-grid-pattern"
-        >
-          <motion.div
-            className="text-center mb-8 sm:mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isWorkforceInView ? 1 : 0, y: isWorkforceInView ? 0 : 20 }}
-            transition={{ duration: 0.4 }}
-          >
-            <h3 className="text-xpectrum-purple font-medium tracking-wide uppercase mb-2 text-sm sm:text-base">WHY HIRE XPECTRUM</h3>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-black mb-4">
-              Multiply your workforce<br />in minutes
-            </h1>
-          </motion.div>
-
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 px-4">
-            <motion.div
-              className="w-full md:w-2/5"
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: isWorkforceInView ? 1 : 0, x: isWorkforceInView ? 0 : -30 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
-            >
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 mr-4 text-[#1a763a]">
-                  <motion.svg
-                    viewBox="0 0 100 100"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-full h-full"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: isWorkforceInView ? 1 : 0 }}
-                    transition={{ duration: 1, delay: 0.2 }}
-                  >
-                    <motion.circle
-                      cx="50" cy="50" r="40"
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      fill="none"
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: isWorkforceInView ? 1 : 0 }}
-                      transition={{ duration: 1 }}
-                    />
-                    <motion.path
-                      d="M30,50 L45,65 L70,35"
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: isWorkforceInView ? 1 : 0 }}
-                      transition={{ duration: 1, delay: 0.5 }}
-                    />
-                  </motion.svg>
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-[#1a763a]">Solution</h2>
-              </div>
-
-              <p className="text-gray-700 text-base sm:text-lg mb-6">
-              At Xpectrum, we're building universal agentic AI bots that act as true digital employees—capable of reasoning, decision-making, and executing tasks across various domains. These agents don't just answer queries; they autonomously plan, coordinate, and complete end-to-end workflows like skilled human representatives.<br></br>
-
-Powered by swarm-based orchestration and intelligent fail-safes, they handle complex, multi-intent scenarios with ease. When needed, they escalate issues to human agents via our integrated Customer Care-as-a-Service (CCaaS) layer—ensuring reliability, task completion, and zero tolerance for hallucinations.
-
-</p>
-
-              <motion.button
-                className="bg-[#1a763a] hover:bg-[#4CAF50] text-white py-2 sm:py-3 px-6 sm:px-8 rounded-full font-medium transition duration-300 w-full sm:w-auto"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                Explore integrations
-              </motion.button>
-            </motion.div>
-
-            <motion.div
-              className="w-full md:w-3/5 flex overflow-hidden h-[20rem] sm:h-[24rem] md:h-[32rem]"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: isWorkforceInView ? 1 : 0, x: isWorkforceInView ? 0 : 30 }}
-              transition={{ duration: 0.4, delay: 0.2 }}
-            >
-              <div className="w-1/2 overflow-hidden relative h-full px-1 sm:px-2">
-                <motion.div
-                  ref={leftContentRef}
-                  className="absolute w-full"
-                  animate={{
-                    y: [0, -leftHeight || -800]
-                  }}
-                  transition={{
-                    y: {
-                      repeat: Infinity,
-                      repeatType: "loop",
-                      duration: 30,
-                      ease: "linear"
-                    }
-                  }}
-                >
-                  {[...leftContent, ...leftContent].map((item, index) => (
-                    <Card key={`left-${index}`} title={item} className="mb-3 sm:mb-4" />
-                  ))}
-                </motion.div>
-              </div>
-
-              <div className="w-1/2 overflow-hidden relative h-full px-1 sm:px-2">
-                <motion.div
-                  ref={rightContentRef}
-                  className="absolute w-full"
-                  animate={{
-                    y: [-rightHeight || -800, 0]
-                  }}
-                  transition={{
-                    y: {
-                      repeat: Infinity,
-                      repeatType: "loop",
-                      duration: 30,
-                      ease: "linear"
-                    }
-                  }}
-                >
-                  {[...rightContent, ...rightContent].map((item, index) => (
-                    <Card key={`right-${index}`} title={item} className="mb-3 sm:mb-4" />
-                  ))}
-                </motion.div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
+        <WorkforceSection />
       </motion.div>
 
       {/* Universal AI Employee Section - Optimized Animation */}
