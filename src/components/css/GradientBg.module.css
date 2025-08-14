@@ -1,0 +1,110 @@
+:root {
+  --blob-speed: 8s;
+  --blob-speed-2: 10s;
+  --blob-speed-3: 12s;
+  --bg-start: rgba(236, 253, 245, 1); /* light green-ish */
+  --bg-end: rgba(220, 252, 231, 1);
+}
+
+/* big container for gradient & blobs */
+.gradientBg2 {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+  padding: 2rem;
+  isolation: isolate;
+  box-shadow: 0 10px 40px rgba(8, 30, 15, 0.08);
+}
+
+/* blobs container */
+.gradientBg2 .gradients-container2 {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* generic blob settings */
+.gradientBg2 .gradients-container2 div {
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  filter: blur(24px);
+  opacity: 0.85;
+  transform-origin: center;
+}
+
+/* individualized blobs */
+.gradientBg2 .g21 {
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle at 30% 30%, rgba(99, 179, 105, 0.9), rgba(99, 179, 105, 0.25) 50%, transparent 60%);
+  top: 5%;
+  left: -8%;
+  animation: move1 var(--blob-speed) ease-in-out infinite alternate;
+}
+
+.gradientBg2 .g22 {
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle at 70% 30%, rgba(26, 118, 58, 0.9), rgba(26, 118, 58, 0.22) 50%, transparent 60%);
+  top: 10%;
+  right: -6%;
+  animation: move2 var(--blob-speed-2) ease-in-out infinite alternate-reverse;
+}
+
+.gradientBg2 .g23 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle at 40% 50%, rgba(129, 199, 132, 0.9), rgba(129, 199, 132, 0.22) 50%, transparent 60%);
+  bottom: 6%;
+  left: 6%;
+  animation: move3 var(--blob-speed-3) ease-in-out infinite alternate;
+}
+
+.gradientBg2 .g24 {
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle at 60% 40%, rgba(56, 142, 60, 0.9), rgba(56, 142, 60, 0.2) 50%, transparent 60%);
+  top: 40%;
+  left: 40%;
+  animation: move2 var(--blob-speed-2) ease-in-out infinite alternate-reverse;
+}
+
+.gradientBg2 .g25 {
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(circle at 50% 50%, rgba(102, 187, 106, 0.9), rgba(102, 187, 106, 0.22) 50%, transparent 60%);
+  bottom: 20%;
+  right: 8%;
+  animation: move1 var(--blob-speed) ease-in-out infinite alternate;
+}
+
+/* subtle parallax-like motion keyframes */
+@keyframes move1 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(40px, -40px) scale(1.15); }
+}
+@keyframes move2 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-30px, 30px) scale(1.08); }
+}
+@keyframes move3 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(20px, 60px) scale(1.12); }
+}
+
+/* responsive tweaks */
+@media (max-width: 1024px) {
+  .gradientBg2 .g21, .gradientBg2 .g22, .gradientBg2 .g25 {
+    width: 260px; height: 260px; filter: blur(18px); opacity: 0.9;
+  }
+  .gradientBg2 .g23 { width: 220px; height: 220px; }
+  .gradientBg2 .g24 { width: 180px; height: 180px; }
+}
+
+@media (max-width: 640px) {
+  .gradientBg2 { padding: 1.25rem; border-radius: 1.25rem; }
+  .gradientBg2 .g21, .gradientBg2 .g22, .gradientBg2 .g25 { display: none; } /* simplify on tiny screens */
+}

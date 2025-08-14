@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, useScroll, useTransform, useInView, AnimatePresence, useAnimation } from 'framer-motion';
 import { ArrowRight, Bot, Building, Users, Computer, Lightbulb, Shield, Target, RefreshCw, FileText, ShieldCheck, Briefcase, BedDouble, Check, X } from 'lucide-react';
+import FeatureCard from './ui/FeatureCard';
+import greenBg from '@/components/images/greenBg.png';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import FlowchartSection from './FlowchartSection';
@@ -8,6 +10,7 @@ import { cn } from '@/lib/utils';
 import ChatComponentXpectrumDemo from './ChatComponentXpectrumDemo';
 import useVoiceAgent from '../hooks/useVoiceAgent';
 import './css/gradient.css';
+import FeaturesSection from './sections/FeatureSection';
 
 // Company logos for carousel - ensure these paths are correct
 const companyLogos = [
@@ -128,6 +131,47 @@ const serviceWorkflows = [
   }
 ];
 
+const features = [
+  {
+    id: 1,
+    icon: RefreshCw,
+    title: (
+      <>
+        One platform to <br /> automate many workflows
+      </>
+    ),
+    subtitle: "Connect, schedule and automate with little config",
+    delay: 0.08,
+    iconWrapperClasses:
+      "bg-gradient-to-br from-green-500 to-emerald-600 group-hover:from-emerald-600",
+    iconHover: { rotate: 20 },
+  },
+  {
+    id: 2,
+    icon: Shield,
+    title: (
+      <>
+        Compliant with <br /> industry standards
+      </>
+    ),
+    subtitle: "Security-first defaults and audit-ready logs",
+    delay: 0.18,
+    iconWrapperClasses:
+      "bg-gradient-to-br from-lime-400 to-green-600 group-hover:scale-105",
+    iconHover: { scale: 1.12 },
+  },
+  {
+    id: 3,
+    icon: Target,
+    title: "Above human-level accuracy",
+    subtitle: "Fine-tuned models and continuous validation",
+    delay: 0.28,
+    iconWrapperClasses:
+      "bg-gradient-to-br from-emerald-300 to-emerald-500",
+    iconHover: { rotate: -15 },
+  },
+];
+
 // --- Helper Components for Workflow Chart ---
 
 type IconType = React.ElementType;
@@ -246,6 +290,25 @@ const WorkflowBlock: React.FC<WorkflowBlockProps> = ({
   
   // Animation for when a block is part of the active flow
   const animatingStyle = isAnimating ? 'scale-105 -translate-y-1' : '';
+
+  const FeatureCard = ({ icon, title, bgColor, hoverBgColor, hoverEffect, delay }) => (
+  <motion.div
+    className="group bg-white rounded-2xl shadow-md p-8 flex flex-col items-center transition-all duration-300 hover:shadow-xl hover:bg-green-50 cursor-pointer border border-gray-100"
+    initial={{ opacity: 0, y: 40 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.4 }}
+    transition={{ duration: 0.6, delay }}
+  >
+    <motion.div
+      className={`w-16 h-16 flex items-center justify-center rounded-full mb-4 ${bgColor} group-hover:${hoverBgColor} transition-colors duration-300`}
+      whileHover={hoverEffect}
+      transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+    >
+      {icon}
+    </motion.div>
+    <p className="text-gray-900 text-lg font-medium mt-2" dangerouslySetInnerHTML={{ __html: title }} />
+  </motion.div>
+);
 
   return (
     <motion.div 
@@ -1092,67 +1155,8 @@ const HomePage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.2 }}
         >
-          <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 text-center px-4">
-            {/* Feature Card 1 */}
-            <motion.div
-              className="group bg-white rounded-2xl shadow-md p-8 flex flex-col items-center transition-all duration-300 hover:shadow-xl hover:bg-green-50 cursor-pointer border border-gray-100"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6, delay: 0.15 }}
-            >
-              <motion.div
-                className="w-16 h-16 flex items-center justify-center rounded-full mb-4 bg-[#1a763a] group-hover:bg-[#4CAF50] transition-colors duration-300"
-                whileHover={{ rotate: 20 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-              >
-                <RefreshCw size={32} className="text-white" />
-              </motion.div>
-              <p className="text-gray-900 text-lg font-medium mt-2">
-                One platform to automate<br />many workflows
-              </p>
-            </motion.div>
 
-            {/* Feature Card 2 */}
-            <motion.div
-              className="group bg-white rounded-2xl shadow-md p-8 flex flex-col items-center transition-all duration-300 hover:shadow-xl hover:bg-green-50 cursor-pointer border border-gray-100"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              <motion.div
-                className="w-16 h-16 flex items-center justify-center rounded-full mb-4 bg-[#4CAF50] group-hover:bg-[#1a763a] transition-colors duration-300"
-                whileHover={{ scale: 1.15 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-              >
-                <Shield size={32} className="text-white" />
-              </motion.div>
-              <p className="text-gray-900 text-lg font-medium mt-2">
-                Compliant with leading<br />industry standards
-              </p>
-            </motion.div>
-
-            {/* Feature Card 3 */}
-            <motion.div
-              className="group bg-white rounded-2xl shadow-md p-8 flex flex-col items-center transition-all duration-300 hover:shadow-xl hover:bg-green-50 cursor-pointer border border-gray-100"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6, delay: 0.45 }}
-            >
-              <motion.div
-                className="w-16 h-16 flex items-center justify-center rounded-full mb-4 bg-[#cce3d4] group-hover:bg-[#4CAF50] transition-colors duration-300"
-                whileHover={{ rotate: -20 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-              >
-                <Target size={32} className="text-[#1a763a] group-hover:text-white transition-colors duration-300" />
-              </motion.div>
-              <p className="text-gray-900 text-lg font-medium mt-2">
-                Above human-level accuracy
-              </p>
-            </motion.div>
-          </div>
+           <FeaturesSection />
         </motion.div>
 
         {/* Add FlowchartSection */}
