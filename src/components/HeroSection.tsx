@@ -12,6 +12,7 @@ import useVoiceAgent from '../hooks/useVoiceAgent';
 import './css/gradient.css';
 import FeaturesSection from './sections/FeatureSection';
 import WorkforceSection from './sections/workforce/WorkforceSection';
+import { NexusButton } from './sections/FloatingXChat';
 
 // Company logos for carousel - ensure these paths are correct
 const companyLogos = [
@@ -1318,10 +1319,10 @@ const HomePage = () => {
 
         /* Enhanced Background Styles */
         .background-gradient-container {
-          --gradient-color-1: #FFF9E6; /* Warm cream */
-          --gradient-color-2: #FFFFFF; /* White */
-          --gradient-color-3: #FFF9E6; /* Warm cream */
-          --gradient-color-4: #FFFFFF; /* White */
+          --gradient-color-1: #FFFFFF;
+          --gradient-color-2: #E0FFD7; 
+          --gradient-color-3: #D8D7FF; 
+          --gradient-color-4: #FFFFFF; 
 
           background: linear-gradient(
             -45deg,
@@ -1377,6 +1378,7 @@ const HomePage = () => {
         }
 
         /* Grid Pattern */
+        /*
         .apply-grid-pattern::before {
           content: "";
           position: absolute;
@@ -1388,7 +1390,8 @@ const HomePage = () => {
           pointer-events: none;
           z-index: 0;
         }
-        
+        */
+
         /* Ensure content sections with backgrounds appear above the fixed background */
         nav { z-index: 50; }
 
@@ -1476,58 +1479,7 @@ const HomePage = () => {
 
       
       {/* Floating X Chat Launcher */}
-      <div className="fixed bottom-8 right-8 z-50 flex flex-col justify-end rounded-3xl shadow-lg bg-white h-32 px-4 pb-4" style={{ minWidth: 0 }}>
-        <span className="text-gray-900 font-bold text-base mb-4 ml-2 text-lg">Hey! Ask Me Anything</span>
-        {/* Start Chat and Start Call Buttons Row */}
-        <div className="flex items-center gap-3 w-full">
-          <button
-            className="flex items-center justify-center gap-2 w-48 h-12 rounded-full font-bold text-base shadow-lg bg-gradient-to-r from-[#1a763a] to-[#4CAF50] text-white focus:outline-none focus:ring-2 focus:ring-[#1a763a] transition-all duration-200"
-            onClick={() => setIsChatOpen(true)}
-            aria-label="START CHAT"
-            style={{ borderRadius: '9999px' }}
-          >
-            {/* Chat Icon (Lucide: MessageCircle) */}
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
-            <p className="text-md">START CHAT</p>
-          </button>
-          {/* Start Call Button */}
-          {!isActive && (
-            <button
-              className="flex items-center justify-center gap-2 w-48 h-12 rounded-full font-bold text-base shadow-lg bg-black text-white uppercase focus:outline-none focus:ring-2 focus:ring-black transition-all duration-200"
-              onClick={startAgent}
-              style={{ borderRadius: '9999px' }}
-            >
-              {/* Call Icon (Lucide: Phone) */}
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-              START CALL
-            </button>
-          )}
-          {connectionStatus === 'connecting' && (
-            <button
-              className="flex items-center justify-center w-48 h-12 bg-black text-white font-bold rounded-full transition hover:bg-gray-900"
-              disabled
-              style={{ borderRadius: '9999px' }}
-            >
-              <svg className="mr-2 animate-spin" width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4" />
-                <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-              </svg>
-              CONNECTING...
-            </button>
-          )}
-          {isActive && (
-            <button
-              className="flex items-center justify-center gap-2 w-48 h-12 rounded-full font-bold text-base shadow-lg bg-black text-white uppercase focus:outline-none focus:ring-2 focus:ring-black transition-all duration-200"
-              onClick={stopAgent}
-              style={{ borderRadius: '9999px' }}
-            >
-              {/* End Call Icon (Lucide: Phone with slash) */}
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/><line x1="1" y1="23" x2="23" y2="1"/></svg>
-              END CALL
-            </button>
-          )}
-        </div>
-      </div>
+      <NexusButton />
 
       {/* Chat Popup */}
       {isChatOpen && (
