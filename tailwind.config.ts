@@ -63,14 +63,15 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				xpectrum: {
-					purple: '#1a763a', // Changed from #4F46E5 to green
-					magenta: '#4CAF50', // Changed from #3B82F6 to green
-					blue: '#4CAF50',    // Changed from #3B82F6 to green
-					darkpurple: '#155e2e', // Changed from #4338CA to dark green
-					lightpurple: '#cce3d4', // Changed from #A5B4FC to muted green
-					dark: '#1A1F2C',
-					light: '#F6F6F7'
-				},
+					purple: '#1e3a8a',      // Changed from #1a763a (deep green) → Navy Blue
+					magenta: '#2563eb',     // Changed from #4CAF50 (medium green) → Bright Blue
+					blue: '#3b82f6',        // Changed from #4CAF50 (green again) → Standard Tailwind Blue
+					darkpurple: '#050a30',  // Changed from #4338CA (dark purple/green mix) → Dark Navy Blue
+					lightpurple: '#dbeafe', // Changed from #cce3d4 (muted green) → Baby Blue
+					dark: '#1A1F2C',        // Unchanged (dark neutral background)
+					light: '#F6F6F7'        // Unchanged (light neutral background)
+				  }
+				  ,
 				greenish: {
 					DEFAULT: '#1a763a',
 					dark: '#155e2e',
@@ -140,7 +141,7 @@ export default {
 				'fade-in-up': 'fade-in-up 0.6s ease-out',
 			},
 			backgroundImage: {
-				'gradient-primary': 'linear-gradient(90deg, #e6f4ea 0%, #1a763a 100%)', // Changed to green gradient
+				'gradient-primary': 'linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--primary-foreground)) 100%)', // Blue gradient using CSS variables
 				'gradient-secondary': 'linear-gradient(90deg, #cce3d4 0%, #155e2e 100%)', // Changed to green gradient
 				'gradient-accent': 'linear-gradient(90deg, hsla(46, 73%, 75%, 1) 0%, hsla(176, 73%, 88%, 1) 100%)',
 				'gradient-purple': 'linear-gradient(102.3deg, #155e2e 5.9%, #4CAF50 64%, #e6f4ea 89%)', // Changed to green gradient

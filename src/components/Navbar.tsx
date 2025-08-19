@@ -6,9 +6,9 @@ import { Link, useLocation } from 'react-router-dom';
 const XpectrumLogo = () => (
   <div className="inline-flex flex-col items-center">
     <img src="/logo.png" alt="Xpectrum AI Logo" className="h-12 w-auto" />
-    <p className="font-lexend text-base text-gray-800 text-center w-full tracking-[0.18em]">
+    {/* <p className="font-lexend text-base text-gray-800 text-center w-full tracking-[0.18em]">
           Think<span className="text-greenish text-glow-greenish">Unthinkable</span>  
-    </p>
+    </p> */}
   </div>
 );
 

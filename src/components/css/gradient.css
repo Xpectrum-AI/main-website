@@ -30,17 +30,18 @@ html, body {
 
 
 
-  /* Accent greens */
-  --color1: 48, 142, 87;   /* deep natural green */
-  --color2: 96, 168, 112;  /* soft medium green */
-  --color3: 173, 221, 186; /* fresh mint green */
+/* Accent blues */
+--color1: 48, 87, 142;   /* changed from deep natural green → deep ocean blue */
+--color2: 96, 112, 168;  /* changed from soft medium green → soft medium blue */
+--color3: 173, 186, 221; /* changed from fresh mint green → fresh sky blue */
 
-  /* Subtle earth tones */
-  --color4: 198, 221, 195; /* pale sage */
-  --color5: 229, 240, 230; /* almost white green */
+/* Subtle cool tones */
+--color4: 195, 198, 221; /* changed from pale sage → pale steel blue */
+--color5: 230, 229, 240; /* changed from almost white green → almost white blue */
 
-  /* Interactive elements */
-  --color-interactive: 62, 158, 116; /* professional green */
+/* Interactive elements */
+--color-interactive: 62, 116, 158; /* changed from professional green → professional blue */
+
 
   /* Shape/animation settings */
   --circle-size: 80%;

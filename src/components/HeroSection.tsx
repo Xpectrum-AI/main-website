@@ -62,7 +62,7 @@ const serviceWorkflows = [
   {
     name: "HRMS",
     icon: Briefcase,
-    color: "#1a763a", 
+    color: "#1e3a8a", 
     roles: [
       { title: "Recruiting Specialist", icon: Users },
       { title: "Onboarding Assistant", icon: FileText },
@@ -86,7 +86,7 @@ const serviceWorkflows = [
   {
     name: "Insurance",
     icon: ShieldCheck,
-    color: "#4CAF50", // Changed from indigo to green
+    color: "#2563eb", // Changed from green to blue
     roles: [
       { title: "Claims Adjuster", icon: FileText }, 
       { title: "Underwriting Asst.", icon: Computer }, 
@@ -871,7 +871,7 @@ const HomePage = () => {
       {/* <Navbar /> */}
       
       {/* Floating Info Container */}
-      <AnimatePresence>
+      {/* <AnimatePresence>
         {showInfoContainer && (
           <motion.div 
             className="fixed top-20 sm:top-24 md:top-28 right-4 sm:right-4 md:right-4 z-40 bg-white rounded-xl shadow-lg border border-gray-100 p-4 xs:p-5 sm:p-6 w-[90vw] xs:w-80 sm:w-96 md:w-[340px] max-w-[340px]"
@@ -903,7 +903,7 @@ const HomePage = () => {
             }}
             transition={{ duration: 0.3 }}
           >
-            <h3 className="font-bold text-lg xs:text-xl text-[#1a763a] mb-3 sm:mb-4">In Progress:</h3>
+            <h3 className="font-bold text-lg xs:text-xl text-xpectrum-purple mb-3 sm:mb-4">In Progress:</h3>
             <ul className="space-y-3 xs:space-y-4">
               <motion.li 
                 className="flex items-start"
@@ -915,7 +915,7 @@ const HomePage = () => {
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Bot size={20} className="text-[#1a763a]" />
+                  <Bot size={20} className="text-xpectrum-purple" />
                 </motion.div>
                 <div className="flex-1">
                   <span className="text-sm xs:text-base text-gray-800 block">
@@ -933,7 +933,7 @@ const HomePage = () => {
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Users size={20} className="text-[#1a763a]" />
+                  <Users size={20} className="text-xpectrum-purple" />
                 </motion.div>
                 <div className="flex-1">
                   <span className="text-sm xs:text-base text-gray-800 block">
@@ -951,7 +951,7 @@ const HomePage = () => {
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Shield size={20} className="text-[#1a763a]" />
+                  <Shield size={20} className="text-xpectrum-purple" />
                 </motion.div>
                 <div className="flex-1">
                   <span className="text-sm xs:text-base text-gray-800 block">
@@ -961,9 +961,9 @@ const HomePage = () => {
               </motion.li>
             </ul>
             
-            {/* Close button for all screens */}
+             
             <button 
-              className="absolute top-3 right-3 text-[#1a763a] bg-white rounded-full shadow hover:bg-[#e6f4ea] z-50 p-1"
+              className="absolute top-3 right-3 text-xpectrum-purple bg-white rounded-full shadow hover:bg-[#e6f4ea] z-50 p-1"
               aria-label="Close Info Container"
               onClick={() => setShowInfoContainer(false)}
             >
@@ -971,7 +971,7 @@ const HomePage = () => {
             </button>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
 
       {/* Hero Contents */}
       <motion.section
@@ -1031,7 +1031,7 @@ const HomePage = () => {
                         transition={{ duration: 0.5 }}
                         className="flex items-center justify-start w-full gap-2 sm:gap-4 md:gap-6 min-h-[1.5rem] sm:min-h-[2rem] md:min-h-[2.5rem] py-1 sm:py-2 md:py-3"
                       >
-                        <span className="bg-gradient-to-r from-[#1a763a] to-[#4CAF50] bg-clip-text text-transparent leading-normal text-left max-w-[300px] xs:max-w-[400px] sm:max-w-none animate-gradient-move">
+                        <span className="bg-gradient-to-r from-xpectrum-purple to-blue bg-clip-text text-transparent leading-normal text-left max-w-[300px] xs:max-w-[400px] sm:max-w-none animate-gradient-move">
                           <span className="sm:hidden whitespace-pre-line text-base xs:text-lg leading-tight">
                             {displayedMessage
                               .replace(/ with | Your | the | for | from | and /, '$&\n')
@@ -1090,12 +1090,12 @@ const HomePage = () => {
                 >
                   <Bot 
                     size={140} 
-                    className="text-[#1a763a] hover:text-[#4CAF50] filter drop-shadow-2xl"
+                    className="text-xpectrum-purple hover:text- filter drop-shadow-2xl"
                   />
                 </motion.div>
                 {/* Enhanced glow effect */}
                 <div 
-                  className="absolute inset-0 bg-[#1a763a] opacity-30 blur-3xl rounded-full -z-10 scale-150"
+                  className="absolute inset-0 bg-xpectrum-purple opacity-30 blur-3xl rounded-full -z-10 scale-150"
                   style={{
                     animation: "glow 3s ease-in-out infinite alternate"
                   }}
@@ -1111,7 +1111,7 @@ const HomePage = () => {
               variants={heroVariants}
               custom={4}
             >
-              <div className="h-10 sm:h-12 md:h-16 lg:h-20 relative text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#1a763a] flex items-center justify-start w-full">
+              <div className="h-10 sm:h-12 md:h-16 lg:h-20 relative text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold text-xpectrum-purple flex items-center justify-start w-full">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={services[index].name}
@@ -1134,7 +1134,7 @@ const HomePage = () => {
                 Transform financial services processes across every function with Agentic AI.
               </p>
               <motion.button
-                className="bg-gradient-to-r from-[#1a763a] to-[#4CAF50] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-bold shadow-xl hover:from-[#4CAF50] hover:to-[#1a763a] transition duration-300 w-full sm:w-auto text-left flex items-center gap-2 overflow-hidden relative"
+                className="bg-gradient-to-r from-xpectrum-purple to-xpectrum-magenta text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-bold shadow-xl hover:from-xpectrum-magenta hover:to-xpectrum-purple transition duration-300 w-full sm:w-auto text-left flex items-center gap-2 overflow-hidden relative"
                 whileHover={{ scale: 1.08, boxShadow: "0 8px 32px rgba(26, 118, 58, 0.18)" }}
                 whileTap={{ scale: 0.97 }}
                 initial="hidden"
@@ -1189,12 +1189,12 @@ const HomePage = () => {
           animate={{ opacity: isUniversalInView ? 1 : 0, y: isUniversalInView ? 0 : 20 }}
           transition={{ duration: 0.4 }}
         >
-          <p className="text-[#1a763a] text-xl sm:text-2xl font-medium mb-2">Xpectrum</p>
+          <p className="text-xpectrum-purple text-xl sm:text-2xl font-medium mb-2">Xpectrum</p>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-dark leading-tight mb-6 sm:mb-8">
             Your Universal AI<br />Employee
           </h1>
           <motion.button
-            className="bg-[#1a763a] hover:bg-[#4CAF50] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-medium text-base sm:text-lg transition duration-300 w-full sm:w-auto"
+            className="bg-xpectrum-purple hover:bg-xpectrum-magenta text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-medium text-base sm:text-lg transition duration-300 w-full sm:w-auto"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >
@@ -1210,7 +1210,7 @@ const HomePage = () => {
         >
           <div className="relative w-full max-w-[280px] sm:max-w-lg aspect-square">
             <motion.div
-              className="absolute inset-0 bg-[#1a763a] rounded-full flex items-center justify-center overflow-hidden"
+              className="absolute inset-0 bg-xpectrum-purple rounded-full flex items-center justify-center overflow-hidden"
               animate={{
                 scale: [1, 1.03, 1],
                 boxShadow: [
@@ -1240,7 +1240,7 @@ const HomePage = () => {
               </motion.div>
 
               <div className="text-white text-center px-4 sm:px-8 text-xl sm:text-2xl md:text-3xl font-medium leading-tight z-10">
-                Think the<br /><span className="text-[#4CAF50]">Unthinkable</span><br />with us
+                Think the<br /><span className="text-xpectrum-magenta">Unthinkable</span><br />with us
               </div>
             </motion.div>
           </div>
@@ -1479,7 +1479,7 @@ const HomePage = () => {
 
       
       {/* Floating X Chat Launcher */}
-      <NexusButton />
+      {/* <NexusButton /> */}
 
       {/* Chat Popup */}
       {isChatOpen && (

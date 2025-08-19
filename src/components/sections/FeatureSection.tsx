@@ -62,7 +62,7 @@ const FeatureSection: React.FC = () => {
           <div
             className="
                 grid
-                grid-cols-2 sm:grid-cols-3 md:grid-cols-5 
+                grid-cols-1 sm:grid-cols-3 md:grid-cols-3 
                 gap-y-8 gap-x-6 
                 items-center 
                 justify-center 
