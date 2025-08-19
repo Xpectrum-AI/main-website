@@ -63,11 +63,11 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				xpectrum: {
-					purple: '#1e3a8a',      // Changed from #1a763a (deep green) → Navy Blue
-					magenta: '#2563eb',     // Changed from #4CAF50 (medium green) → Bright Blue
-					blue: '#3b82f6',        // Changed from #4CAF50 (green again) → Standard Tailwind Blue
-					darkpurple: '#050a30',  // Changed from #4338CA (dark purple/green mix) → Dark Navy Blue
-					lightpurple: '#dbeafe', // Changed from #cce3d4 (muted green) → Baby Blue
+					purple: '#ffaebc',      // Changed from #1a763a (deep green) → Navy Blue
+					magenta: '#a0e7e5',     // Changed from #4CAF50 (medium green) → Bright Blue
+					blue: '#b4f8c8',        // Changed from #4CAF50 (green again) → Standard Tailwind Blue
+					darkpurple: '#fbe7c6',  // Changed from #4338CA (dark purple/green mix) → Dark Navy Blue
+					lightpurple: '#fbe7c6', // Changed from #cce3d4 (muted green) → Baby Blue
 					dark: '#1A1F2C',        // Unchanged (dark neutral background)
 					light: '#F6F6F7'        // Unchanged (light neutral background)
 				  }

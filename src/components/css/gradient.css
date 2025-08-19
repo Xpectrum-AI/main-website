@@ -30,15 +30,15 @@ html, body {
 
 
 
-/* Accent blues */
---color1: 48, 87, 142;   /* changed from deep natural green → deep ocean blue */
---color2: 96, 112, 168;  /* changed from soft medium green → soft medium blue */
---color3: 173, 186, 221; /* changed from fresh mint green → fresh sky blue */
 
-/* Subtle cool tones */
---color4: 195, 198, 221; /* changed from pale sage → pale steel blue */
---color5: 230, 229, 240; /* changed from almost white green → almost white blue */
+/* Deep and saturated pinks */
+--color1: 199, 44, 112;    /* Deep Berry Pink */
+--color2: 222, 94, 153;    /* Soft Magenta */
+--color3: 232, 142, 181;   /* Fresh Rose Pink */
 
+/* Subtle cool-toned pinks */
+--color4: 237, 187, 206;   /* Pale Petal Pink */
+--color5: 245, 235, 238;   /* Almost White Pink */
 /* Interactive elements */
 --color-interactive: 62, 116, 158; /* changed from professional green → professional blue */
 

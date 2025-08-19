@@ -17,10 +17,10 @@
   padding: var(--panel-padding);
   background: linear-gradient(
     120deg,
-    rgb(24, 64, 164) 0%,
-    rgba(240, 245, 255, 1) 35%,
-    rgb(90, 170, 255) 65%,
-    rgba(240, 247, 255, 1) 100%
+    rgb(220, 38, 127) 0%,      /* Deep Pink */
+    rgba(255, 240, 225, 1) 35%,  /* Pale Peach/Off-white */
+    rgb(255, 190, 80) 65%,     /* Golden Yellow */
+    rgba(255, 248, 240, 1) 100% /* Very Light Peach/Off-white */
   );
   background-size: 300% 300%;
   animation: panelGradient var(--bg-speed) ease-in-out infinite;

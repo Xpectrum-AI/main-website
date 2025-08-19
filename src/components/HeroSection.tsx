@@ -1320,8 +1320,8 @@ const HomePage = () => {
         /* Enhanced Background Styles */
         .background-gradient-container {
           --gradient-color-1: #FFFFFF;
-          --gradient-color-2: #87CEEB; 
-          --gradient-color-3: #D8D7FF; 
+          --gradient-color-2: #b4f8c8; 
+          --gradient-color-3: #b4f8c8; 
           --gradient-color-4: #FFFFFF; 
 
           background: linear-gradient(
