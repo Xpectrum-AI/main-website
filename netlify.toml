@@ -1,0 +1,57 @@
+[build]
+  # Build command
+  command = "chmod +x build.sh && ./build.sh"
+  
+  # Publish directory (where the built files are located)
+  publish = "dist"
+  
+  # Node version
+  [build.environment]
+    NODE_VERSION = "20"
+    NODE_ENV = "production"
+    VITE_API_URL = "/api"
+    VITE_WS_URL = "wss://xpectrum-ai.com/api/ws/audio"
+
+[build.processing]
+  # Skip processing for certain file types
+  skip_processing = false
+
+# Redirects for SPA routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers for security and performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
