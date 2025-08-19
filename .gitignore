@@ -16,9 +16,9 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-# Build output
-dist/
-build/ 
+# Build output (keep for local development, but Netlify will build this)
+# dist/
+# build/ 
 
 /backend/node_modules/
 /backend/dist/
