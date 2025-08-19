@@ -10,10 +10,10 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - AWS_ACCESS_KEY_ID=AKIAZKY542Z6FSTWFY26
-      - AWS_SECRET_ACCESS_KEY=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
-      - AWS_DEFAULT_REGION=us-east-1
-      - PORT=8000
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+      - PORT=${PORT:-8000}
     volumes:
       - ./backend/tmp:/tmp
     networks:

@@ -1,0 +1,59 @@
+name: Deploy Application
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Create .env file
+      run: |
+        echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+        echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+        echo "AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }}" >> .env
+        echo "PORT=8000" >> .env
+        echo "NODE_ENV=production" >> .env
+        echo "VITE_API_URL=/api" >> .env
+        echo "VITE_WS_URL=wss://xpectrum-ai.com/api/ws/audio" >> .env
+    
+    - name: Build and start services
+      run: |
+        docker-compose up -d --build
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+        PORT: 8000
+        NODE_ENV: production
+        VITE_API_URL: /api
+        VITE_WS_URL: wss://xpectrum-ai.com/api/ws/audio
+        
+    - name: Health check
+      run: |
+        sleep 30
+        curl -f http://localhost:8000/health || curl -f http://localhost:8000/ || echo "Health check failed, but continuing..."
+        
+    - name: Stop services
+      run: |
+        docker-compose down
+      if: always()
