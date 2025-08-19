@@ -26,6 +26,11 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       
+    - name: Verify Docker installation
+      run: |
+        docker --version
+        docker compose version
+        
     - name: Create .env file
       run: |
         echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
@@ -38,22 +43,31 @@ jobs:
     
     - name: Build and start services
       run: |
-        docker-compose up -d --build
+        docker compose up -d --build
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-        PORT: 8000
-        NODE_ENV: production
-        VITE_API_URL: /api
-        VITE_WS_URL: wss://xpectrum-ai.com/api/ws/audio
+        
+    - name: Wait for services to start
+      run: |
+        echo "Waiting for services to start..."
+        sleep 30
+        
+    - name: Check running containers
+      run: |
+        docker compose ps
+        docker compose logs --tail=50
         
     - name: Health check
       run: |
-        sleep 30
-        curl -f http://localhost:8000/health || curl -f http://localhost:8000/ || echo "Health check failed, but continuing..."
+        echo "Performing health check..."
+        # Try backend health endpoint
+        curl -f http://localhost:8000/health || curl -f http://localhost:8000/ || echo "Backend health check failed"
+        # Try frontend
+        curl -f http://localhost:8084/ || echo "Frontend health check failed"
         
     - name: Stop services
       run: |
-        docker-compose down
+        docker compose down
       if: always()
