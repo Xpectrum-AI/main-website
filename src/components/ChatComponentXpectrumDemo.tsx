@@ -22,8 +22,8 @@ interface AttachedFile {
   url?: string;
 }
 
-// Remove hardcoded API_KEY
-const BASE_URL = "https://demo.xpectrum-ai.com/v1";
+// Get API URL from environment variable
+const BASE_URL = import.meta.env.VITE_DEMO_API_URL || "https://demo.xpectrum-ai.com/v1";
 const WELCOME_MESSAGE = "Welcome to Xpectrum AI Demo! How can I help you today?";
 const PLACEHOLDER_TEXT = "Ask anything about our Agentic AI, Voice, CaaS...";
 const ASSISTANT_NAME = "Xpectrum AI Demo Assistant";
