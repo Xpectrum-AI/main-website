@@ -1309,18 +1309,18 @@ const HomePage = () => {
         }
         
         ::-webkit-scrollbar-thumb {
-          background: rgba(26, 118, 58, 0.6);
+          background: rgba(59, 130, 246, 0.6);
           border-radius: 4px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-          background: rgba(26, 118, 58, 0.8);
+          background: rgba(59, 130, 246, 0.8);
         }
 
         /* Enhanced Background Styles */
         .background-gradient-container {
           --gradient-color-1: #FFFFFF;
-          --gradient-color-2: #E0FFD7; 
+          --gradient-color-2: #87CEEB; 
           --gradient-color-3: #D8D7FF; 
           --gradient-color-4: #FFFFFF; 
 
