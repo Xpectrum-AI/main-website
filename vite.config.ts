@@ -4,7 +4,11 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode }) => {
+  // Set NODE_ENV for the build process
+  process.env.NODE_ENV = mode;
+  
+  return {
   server: {
     host: "::",
     port: 8084,
@@ -12,7 +16,7 @@ export default defineConfig(({ mode }) => ({
       ignored: ["**/.git/**"], 
     },
     proxy: {
-      '/api': 'http://localhost:8000',
+      '/api': process.env.VITE_API_URL || 'http://localhost:8000',
     }
   },
   plugins: [
@@ -24,4 +28,5 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-}));
+  };
+});

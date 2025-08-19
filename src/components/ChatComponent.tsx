@@ -48,9 +48,9 @@ const DOMAIN_CONFIG = {
 
 const BASE_URL = (domain => {
   if (domain === 'Insurance') {
-    return 'https://rnd.xpectrum-ai.com/v1';
+    return import.meta.env.VITE_RND_API_URL || 'https://rnd.xpectrum-ai.com/v1';
   }
-  return 'https://demo.xpectrum-ai.com/v1';
+  return import.meta.env.VITE_DEMO_API_URL || 'https://demo.xpectrum-ai.com/v1';
 });
 
 // Function to get API key based on domain

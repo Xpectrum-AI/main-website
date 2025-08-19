@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Get API URL from environment variable or use default
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// Get API URL from environment variable
+const API_URL = import.meta.env.VITE_API_URL;
 
 // Create axios instance with default config
 const api = axios.create({
@@ -33,7 +33,7 @@ const apiService = {
 
   // WebSocket connection for real-time voice chat
   getWebSocketUrl: () => {
-    const wsUrl = import.meta.env.VITE_WS_URL || 'wss://xpectrum-ai.com/api/ws/audio';
+    const wsUrl = import.meta.env.VITE_WS_URL;
     return wsUrl;
   },
 

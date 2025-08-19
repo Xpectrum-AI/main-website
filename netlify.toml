@@ -1,6 +1,6 @@
 [build]
   # Build command
-  command = "chmod +x build.sh && ./build.sh"
+  command = "npm ci && npm run build"
   
   # Publish directory (where the built files are located)
   publish = "dist"
@@ -8,9 +8,10 @@
   # Node version
   [build.environment]
     NODE_VERSION = "20"
-    NODE_ENV = "production"
     VITE_API_URL = "/api"
     VITE_WS_URL = "wss://xpectrum-ai.com/api/ws/audio"
+    VITE_DEMO_API_URL = "https://demo.xpectrum-ai.com/v1"
+    VITE_RND_API_URL = "https://rnd.xpectrum-ai.com/v1"
 
 [build.processing]
   # Skip processing for certain file types

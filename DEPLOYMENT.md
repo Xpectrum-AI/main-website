@@ -5,7 +5,7 @@ This project is configured for deployment on Netlify with the following setup:
 
 - **Framework**: React + Vite
 - **Package Manager**: npm
-- **Build Command**: `chmod +x build.sh && ./build.sh`
+- **Build Command**: `npm ci && npm run build`
 - **Publish Directory**: `dist`
 - **Node Version**: 20
 
@@ -18,11 +18,11 @@ The main configuration file that tells Netlify how to build and deploy the proje
 - Redirects for SPA routing
 - Security headers and caching rules
 
-### build.sh
-A build script that ensures proper dependency installation and build process:
-- Uses `npm ci` for clean installs
-- Runs the build command
-- Provides clear error reporting
+### Build Process
+The build process is handled directly by Netlify:
+- Uses `npm ci` for clean dependency installation
+- Runs `npm run build` to build the application
+- Outputs files to the `dist` directory
 
 ## Environment Variables
 
@@ -80,7 +80,6 @@ npm run preview
 
 ```
 ├── netlify.toml          # Netlify configuration
-├── build.sh              # Build script
 ├── package.json          # Dependencies and scripts
 ├── package-lock.json     # npm lock file
 ├── .nvmrc               # Node version specification
